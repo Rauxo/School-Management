@@ -4,7 +4,8 @@ const {
     addBatch, getBatches, updateBatch, deleteBatch,
     getDashboardStats,
     addNotice, getAdminNotices, uploadMaterial, getAdminMaterials, getIncomeReport,
-    getExams, createExam
+    getExams, createExam,
+    getStaffAttendanceAdmin, approvePayment, downloadIncomeReport
 } = require('../controllers/adminController');
 const { createFee, getFees, getPendingDues } = require('../controllers/feeController');
 const { protect, admin } = require('../middleware/authMiddleware');
@@ -41,8 +42,11 @@ router.route('/batches/:id')
 router.route('/fees')
     .post(createFee)
     .get(getFees);
+router.put('/fees/:id/approve', approvePayment);
 router.get('/reports/dues', getPendingDues);
 router.get('/reports/income', getIncomeReport);
+router.get('/reports/income/download', downloadIncomeReport);
+router.get('/staff-attendance', getStaffAttendanceAdmin);
 
 router.route('/notices')
     .post(addNotice)

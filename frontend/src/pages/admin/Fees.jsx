@@ -4,7 +4,8 @@ import DataTable from '@/components/common/DataTable';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { Plus, Download } from 'lucide-react';
-import { useGetFeesQuery, useCreateFeeMutation } from '@/api/services/feesApi';
+import { useGetFeesQuery, useCreateFeeMutation, useApproveFeeMutation } from '@/api/services/feesApi';
+import API from '@/api/axios';
 import { useGetStudentsQuery } from '@/api/services/studentsApi';
 import { useGetBatchesQuery } from '@/api/services/batchesApi';
 import Modal from '@/components/common/Modal';
@@ -19,7 +20,32 @@ const Fees = () => {
 
     const [isModalOpen, setModalOpen] = useState(false);
     const [createFee, { isLoading: isSaving }] = useCreateFeeMutation();
+    const [approveFee] = useApproveFeeMutation();
     const [formData, setFormData] = useState({ studentId: '', batchId: '', title: '', amount: '', dueDate: '' });
+
+    const handleApprove = async (id) => {
+        try {
+            await approveFee(id).unwrap();
+            toast.success('Payment approved successfully');
+        } catch (err) { toast.error('Failed to approve payment'); }
+    };
+
+    const handleDownloadReport = async () => {
+        try {
+            const response = await API.get('/admin/reports/income/download', {
+                responseType: 'blob',
+            });
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', 'income_report.csv');
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+        } catch (error) {
+            toast.error('Failed to download report');
+        }
+    };
 
     const columns = [
         { 
@@ -42,12 +68,24 @@ const Fees = () => {
                 </Badge>
             )
         },
-        {
-            header: 'Invoice',
+        { 
+            header: 'Actions', 
             cell: (row) => (
-                <Button variant="ghost" size="sm" className="size-8 p-0 text-slate-400" title="Download Invoice">
-                    <Download size={14} />
-                </Button>
+                <div className="flex gap-2 items-center">
+                    {row.status === 'pending' && (
+                        <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="h-8 text-xs font-semibold text-emerald-600 border-emerald-200 hover:bg-emerald-50 mb-0"
+                            onClick={() => handleApprove(row._id)}
+                        >
+                            ✓ Approve
+                        </Button>
+                    )}
+                    <Button variant="ghost" size="sm" className="size-8 p-0 text-slate-400" title="Download Invoice">
+                        <Download size={14} />
+                    </Button>
+                </div>
             )
         }
     ];
@@ -81,9 +119,14 @@ const Fees = () => {
                     </h1>
                     <p className="text-slate-500 text-sm italic">Track payments, invoices and pending dues.</p>
                 </div>
-                <Button onClick={() => setModalOpen(true)} className="gap-2 shadow-lg shadow-primary/10">
-                    <Plus size={18} /> New Fee Record
-                </Button>
+                <div className="flex gap-3">
+                    <Button onClick={handleDownloadReport} variant="outline" className="gap-2 shadow-sm border-slate-200 text-slate-700 bg-white hover:bg-slate-50">
+                        <Download size={18} /> Download Report
+                    </Button>
+                    <Button onClick={() => setModalOpen(true)} className="gap-2 shadow-lg shadow-primary/10">
+                        <Plus size={18} /> New Fee Record
+                    </Button>
+                </div>
             </div>
 
             <DataTable 

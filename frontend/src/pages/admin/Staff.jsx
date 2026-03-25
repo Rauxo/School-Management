@@ -10,12 +10,14 @@ import {
     useUpdateStaffMutation, 
     useDeleteStaffMutation 
 } from '@/api/services/staffApi';
+import { useGetBatchesQuery } from '@/api/services/batchesApi';
 import Modal from '@/components/common/Modal';
 import { Input } from '@/components/ui/Input';
 import toast from 'react-hot-toast';
 
 const Staff = () => {
     const { data: staff, isLoading } = useGetStaffQuery();
+    const { data: batches } = useGetBatchesQuery();
     const [addStaff, { isLoading: isAdding }] = useAddStaffMutation();
     const [updateStaff, { isLoading: isUpdating }] = useUpdateStaffMutation();
     const [deleteStaff] = useDeleteStaffMutation();
@@ -25,7 +27,7 @@ const Staff = () => {
     const [currentId, setCurrentId] = useState(null);
 
     const initialForm = { 
-        name: '', email: '', password: '', employeeId: '', designation: '', salary: '', phone: '', address: '' 
+        name: '', email: '', password: '', employeeId: '', designation: '', salary: '', phone: '', address: '', assignedBatches: [] 
     };
     const [formData, setFormData] = useState(initialForm);
 
@@ -45,6 +47,16 @@ const Staff = () => {
             )
         },
         { header: 'Designation', accessor: 'designation', cell: (row) => <Badge variant="outline">{row.designation}</Badge> },
+        { 
+            header: 'Assigned Batches', 
+            cell: (row) => (
+                <div className="flex flex-wrap gap-1">
+                    {row.assignedBatches?.length > 0 ? row.assignedBatches.map(b => (
+                        <Badge key={b._id} variant="secondary" className="text-xs bg-blue-50 text-blue-600 border-blue-200">{b.name}</Badge>
+                    )) : <span className="text-xs text-slate-400">None</span>}
+                </div>
+            )
+        },
         { header: 'Email', accessor: 'email', cell: (row) => row.user?.email },
         { header: 'Salary', accessor: 'salary', cell: (row) => <span className="font-mono font-bold">₹{row.salary?.toLocaleString()}</span> },
         { 
@@ -83,7 +95,8 @@ const Staff = () => {
             designation: member.designation || '',
             salary: member.salary || '',
             phone: member.phone || '',
-            address: member.address || ''
+            address: member.address || '',
+            assignedBatches: member.assignedBatches ? member.assignedBatches.map(b => b._id) : []
         });
         setModalOpen(true);
     };
@@ -176,6 +189,31 @@ const Staff = () => {
                         <label className="text-sm font-semibold text-slate-700">Address</label>
                         <Input placeholder="Address" value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} />
                     </div>
+
+                    {isEditMode && (
+                        <div className="space-y-2 pt-2">
+                            <label className="text-sm font-semibold text-slate-700">Assigned Batches</label>
+                            <div className="grid grid-cols-2 lg:grid-cols-3 gap-2">
+                                {batches?.map(batch => (
+                                    <label key={batch._id} className="flex items-center gap-2 text-sm border p-2 rounded-md hover:bg-slate-50 cursor-pointer">
+                                        <input 
+                                            type="checkbox" 
+                                            checked={formData.assignedBatches.includes(batch._id)}
+                                            onChange={(e) => {
+                                                if (e.target.checked) {
+                                                    setFormData({...formData, assignedBatches: [...formData.assignedBatches, batch._id]});
+                                                } else {
+                                                    setFormData({...formData, assignedBatches: formData.assignedBatches.filter(id => id !== batch._id)});
+                                                }
+                                            }}
+                                            className="rounded border-slate-300 text-primary focus:ring-primary"
+                                        />
+                                        {batch.name}
+                                    </label>
+                                ))}
+                            </div>
+                        </div>
+                    )}
 
                     <div className="flex gap-3 justify-end mt-6 pt-4 border-t">
                         <Button variant="outline" type="button" onClick={() => setModalOpen(false)}>Cancel</Button>

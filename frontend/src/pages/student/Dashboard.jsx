@@ -9,6 +9,12 @@ import { Badge } from '@/components/ui/Badge';
 const StudentDashboard = () => {
     const { data, isLoading } = useGetStudentProfileQuery();
 
+    const avgScore = data?.results?.length > 0
+        ? (data.results.reduce((acc, r) => acc + (r.marksObtained / r.exam.maxMarks), 0) / data.results.length) * 100
+        : 0;
+    
+    const attendanceLevel = data?.attendancePercentage || 0;
+
     return (
         <StudentLayout>
             <div className="mb-8 flex items-center justify-between">
@@ -37,6 +43,36 @@ const StudentDashboard = () => {
                     icon={CheckCircle} 
                     color="purple"
                 />
+            </div>
+
+            <div className="bg-white rounded-xl shadow-sm p-6 mb-8 flex flex-col md:flex-row gap-8 items-center border border-slate-100 relative overflow-hidden">
+                <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-blue-400 to-indigo-500"></div>
+                <div className="flex-1 w-full space-y-5 lg:pr-8">
+                    <div>
+                        <div className="flex justify-between mb-1.5 px-1">
+                            <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">Attendance Limit</span>
+                            <span className="text-xs font-bold text-slate-700">{attendanceLevel.toFixed(0)}% / 100%</span>
+                        </div>
+                        <div className="w-full bg-slate-100 rounded-full h-3">
+                            <div className="bg-gradient-to-r from-blue-400 to-indigo-500 h-3 rounded-full transition-all duration-1000" style={{ width: `${Math.min(100, attendanceLevel)}%` }}></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div className="flex justify-between mb-1.5 px-1">
+                            <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">Academics</span>
+                            <span className="text-xs font-bold text-slate-700">{avgScore.toFixed(0)}% Avg</span>
+                        </div>
+                        <div className="w-full bg-slate-100 rounded-full h-3">
+                            <div className="bg-gradient-to-r from-emerald-400 to-green-500 h-3 rounded-full transition-all duration-1000" style={{ width: `${Math.min(100, avgScore)}%` }}></div>
+                        </div>
+                    </div>
+                </div>
+                <div className="text-center md:w-48 shrink-0">
+                    <p className="text-3xl font-extrabold tracking-tight text-slate-800">
+                        {((attendanceLevel + avgScore) / 2) >= 75 ? 'Excellent' : (((attendanceLevel + avgScore) / 2) >= 50 ? 'Good' : 'Needs Work')}
+                    </p>
+                    <p className="text-[10px] text-slate-400 uppercase tracking-[0.2em] font-bold mt-2">Current Standing</p>
+                </div>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

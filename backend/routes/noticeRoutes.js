@@ -22,4 +22,21 @@ router.get('/', protect, async (req, res) => {
     }
 });
 
+// @desc    Mark a notice as read by the current user
+// @route   PUT /api/notices/:id/read
+// @access  Private
+router.put('/:id/read', protect, async (req, res) => {
+    try {
+        const notice = await Notice.findByIdAndUpdate(
+            req.params.id,
+            { $addToSet: { readBy: req.user._id } },
+            { new: true }
+        );
+        if (!notice) return res.status(404).json({ message: 'Notice not found' });
+        res.json(notice);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
 module.exports = router;

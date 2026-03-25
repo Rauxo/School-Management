@@ -1,5 +1,15 @@
 const express = require('express');
-const { markStudentAttendance, getMyAttendance, getBatchStudents, enterMarks } = require('../controllers/staffController');
+const {
+    getStaffDashboardStats,
+    getMyBatches,
+    markStudentAttendance,
+    getTodayAttendance,
+    getMyAttendance,
+    getBatchStudents,
+    enterMarks,
+    getStudentProfile,
+    getBatchResults
+} = require('../controllers/staffController');
 const { protect, staff } = require('../middleware/authMiddleware');
 
 const router = express.Router();
@@ -7,9 +17,14 @@ const router = express.Router();
 router.use(protect);
 router.use(staff);
 
+router.get('/dashboard', getStaffDashboardStats);
+router.get('/my-batches', getMyBatches);
 router.post('/attendance', markStudentAttendance);
+router.get('/attendance-today/:batchId', getTodayAttendance);
 router.get('/my-attendance', getMyAttendance);
 router.get('/students/:batchId', getBatchStudents);
 router.post('/results', enterMarks);
+router.get('/student/:studentId/profile', getStudentProfile);
+router.get('/results/:batchId', getBatchResults);
 
 module.exports = router;

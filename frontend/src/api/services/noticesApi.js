@@ -14,7 +14,15 @@ export const noticesApi = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ['Notice'],
     }),
+    markNoticeAsRead: builder.mutation({
+      query: (id) => ({
+        url: `/notices/${id}/read`,
+        method: 'PUT',
+      }),
+      // Optimistically update the cache tag so the dot disappears immediately
+      invalidatesTags: ['Notice'],
+    }),
   }),
 });
 
-export const { useGetNoticesQuery, useCreateNoticeMutation } = noticesApi;
+export const { useGetNoticesQuery, useCreateNoticeMutation, useMarkNoticeAsReadMutation } = noticesApi;

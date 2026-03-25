@@ -17,7 +17,14 @@ export const feesApi = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ['Fee', 'Dashboard'],
     }),
+    approveFee: builder.mutation({
+      query: (id) => ({
+        url: `/admin/fees/${id}/approve`,
+        method: 'PUT',
+      }),
+      invalidatesTags: ['Fee', 'Dashboard'],
+    }),
   }),
 });
 
-export const { useGetFeesQuery, useCreateFeeMutation } = feesApi;
+export const { useGetFeesQuery, useCreateFeeMutation, useApproveFeeMutation } = feesApi;

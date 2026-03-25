@@ -1,12 +1,22 @@
-import React from 'react';
+import React, { useState } from 'react';
 import StudentLayout from '@/layouts/StudentLayout';
 import { useGetAdminMaterialsQuery } from '@/api/services/materialsApi';
 import { Card, CardContent } from '@/components/ui/Card';
 import { FileText, Download, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
+import { Badge } from '@/components/ui/Badge';
 
 const Materials = () => {
     const { data: materials, isLoading } = useGetAdminMaterialsQuery();
+    const [activeTab, setActiveTab] = useState('All');
+
+    const filteredMaterials = materials?.filter(m => {
+        if (activeTab === 'All') return true;
+        const mt = m.type?.toLowerCase() || '';
+        if (activeTab === 'Study Materials') return !mt.includes('practice');
+        if (activeTab === 'Practice Sheets') return mt.includes('practice');
+        return true;
+    });
 
     return (
         <StudentLayout>
@@ -17,11 +27,23 @@ const Materials = () => {
                 <p className="text-slate-500 text-sm italic">Access your shared study materials and references.</p>
             </div>
 
+            <div className="flex gap-4 mb-6 border-b border-slate-200">
+                {['All', 'Study Materials', 'Practice Sheets'].map(tab => (
+                    <button 
+                        key={tab} 
+                        onClick={() => setActiveTab(tab)}
+                        className={`pb-3 text-sm font-bold transition-all ${activeTab === tab ? 'border-b-2 border-primary text-primary' : 'text-slate-400 hover:text-slate-600'}`}
+                    >
+                        {tab}
+                    </button>
+                ))}
+            </div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {isLoading ? (
                     [1,2,3].map(i => <div key={i} className="h-32 bg-slate-100 rounded-xl animate-pulse" />)
-                ) : materials?.length > 0 ? (
-                    materials.map((m) => (
+                ) : filteredMaterials?.length > 0 ? (
+                    filteredMaterials.map((m) => (
                         <Card key={m._id} className="border-none shadow-sm hover:shadow-md transition-shadow group overflow-hidden">
                             <CardContent className="p-0">
                                 <div className="p-6">

@@ -6,6 +6,7 @@ const Fee = require('../models/feeModel');
 const Exam = require('../models/examModel');
 const Notice = require('../models/noticeModel');
 const Material = require('../models/materialModel');
+const StaffAttendance = require('../models/staffAttendanceModel');
 
 // @desc    Add new student
 // @route   POST /api/admin/students
@@ -133,7 +134,7 @@ const addStaff = async (req, res) => {
 // @route   GET /api/admin/staff
 // @access  Private/Admin
 const getStaff = async (req, res) => {
-    const staff = await Staff.find({}).populate('user', 'name email');
+    const staff = await Staff.find({}).populate('user', 'name email').populate('assignedBatches', 'name');
     res.json(staff);
 };
 
@@ -150,6 +151,10 @@ const updateStaff = async (req, res) => {
         staff.phone = req.body.phone || staff.phone;
         staff.address = req.body.address || staff.address;
         staff.status = req.body.status || staff.status;
+        // Allow admin to assign/update batches
+        if (req.body.assignedBatches !== undefined) {
+            staff.assignedBatches = req.body.assignedBatches;
+        }
 
         const updatedStaff = await staff.save();
 
@@ -359,6 +364,53 @@ const createExam = async (req, res) => {
     res.status(201).json(exam);
 };
 
+// @desc    Get all staff attendance
+// @route   GET /api/admin/staff-attendance
+// @access  Private/Admin
+const getStaffAttendanceAdmin = async (req, res) => {
+    const attendance = await StaffAttendance.find({}).populate({
+        path: 'staff',
+        populate: { path: 'user', select: 'name email' }
+    });
+    res.json(attendance);
+};
+
+// @desc    Approve Online Payment
+// @route   PUT /api/admin/fees/:id/approve
+// @access  Private/Admin
+const approvePayment = async (req, res) => {
+    const fee = await Fee.findById(req.params.id);
+    if (fee) {
+        fee.status = 'paid';
+        fee.paidAt = new Date();
+        const updatedFee = await fee.save();
+        res.json(updatedFee);
+    } else {
+        res.status(404).json({ message: 'Fee record not found' });
+    }
+};
+
+// @desc    Download Income Report CSV
+// @route   GET /api/admin/reports/income/download
+// @access  Private/Admin
+const downloadIncomeReport = async (req, res) => {
+    const fees = await Fee.find({ status: 'paid' }).populate({
+        path: 'student',
+        populate: { path: 'user', select: 'name' }
+    });
+
+    let csv = 'Receipt No,Student Name,Amount,Title,Paid At\n';
+    fees.forEach(fee => {
+        const studentName = fee.student && fee.student.user ? fee.student.user.name : 'Unknown';
+        const paidAt = fee.paidAt ? new Date(fee.paidAt).toISOString().split('T')[0] : (fee.updatedAt ? new Date(fee.updatedAt).toISOString().split('T')[0] : '');
+        csv += `${fee._id},"${studentName}",${fee.amount},"${fee.title}",${paidAt}\n`;
+    });
+
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', 'attachment; filename=income_report.csv');
+    res.status(200).send(csv);
+};
+
 module.exports = { 
     addStudent, getStudents, updateStudent, deleteStudent,
     addStaff, getStaff, updateStaff, deleteStaff,
@@ -368,5 +420,6 @@ module.exports = {
     uploadMaterial,
     getAdminMaterials,
     getIncomeReport,
-    getExams, createExam
+    getExams, createExam,
+    getStaffAttendanceAdmin, approvePayment, downloadIncomeReport
 };

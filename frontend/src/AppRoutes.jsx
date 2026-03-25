@@ -15,13 +15,16 @@ import Fees from "./pages/admin/Fees";
 import Batches from "./pages/admin/Batches";
 import Exams from "./pages/admin/Exams";
 import Materials from "./pages/admin/Materials";
+import AdminStaffAttendance from "./pages/admin/StaffAttendance";
 import Attendance from "./pages/staff/Attendance";
+import StaffStudents from "./pages/staff/Students";
 import MarksEntry from "./pages/staff/MarksEntry";
 import StudentDashboard from "./pages/student/Dashboard";
 import StudentFees from "./pages/student/Fees";
 import StudentAttendance from "./pages/student/Attendance";
 import StudentMaterials from "./pages/student/Materials";
 import StudentCertificates from "./pages/student/Certificates";
+import StudentResults from "./pages/student/Results";
 import StaffDashboard from "./pages/staff/Dashboard";
 import Notices from "./pages/common/Notices";
 import { ProtectedRoute, RoleRoute } from "./routes/Guards";
@@ -56,6 +59,7 @@ const AppRoutes = () => {
               <Route path="/admin/dashboard" element={<AdminDashboard />} />
               <Route path="/admin/students" element={<Students />} />
               <Route path="/admin/staff" element={<Staff />} />
+              <Route path="/admin/staff-attendance" element={<AdminStaffAttendance />} />
               <Route path="/admin/batches" element={<Batches />} />
               <Route path="/admin/exams" element={<Exams />} />
               <Route path="/admin/fees" element={<Fees />} />
@@ -65,6 +69,7 @@ const AppRoutes = () => {
 
             <Route element={<RoleRoute allowedRoles={["staff"]} />}>
               <Route path="/staff/dashboard" element={<StaffDashboard />} />
+              <Route path="/staff/students" element={<StaffStudents />} />
               <Route path="/staff/attendance" element={<Attendance />} />
               <Route path="/staff/marks" element={<MarksEntry />} />
               <Route path="/staff/notices" element={<Notices />} />
@@ -83,6 +88,7 @@ const AppRoutes = () => {
                 path="/student/certificates"
                 element={<StudentCertificates />}
               />
+              <Route path="/student/results" element={<StudentResults />} />
               <Route path="/student/notices" element={<Notices />} />
             </Route>
           </Route>

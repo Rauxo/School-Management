@@ -29,7 +29,22 @@ export const staffApi = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ['Staff', 'Dashboard'],
     }),
+    getStudentProfile: builder.query({
+      query: (studentId) => `/staff/student/${studentId}/profile`,
+      providesTags: ['Student'],
+    }),
+    getBatchResults: builder.query({
+      query: (batchId) => `/staff/results/${batchId}`,
+      providesTags: ['Result'],
+    }),
   }),
 });
 
-export const { useGetStaffQuery, useAddStaffMutation, useDeleteStaffMutation, useUpdateStaffMutation } = staffApi;
+export const { 
+  useGetStaffQuery, 
+  useAddStaffMutation, 
+  useDeleteStaffMutation, 
+  useUpdateStaffMutation,
+  useGetStudentProfileQuery,
+  useGetBatchResultsQuery
+} = staffApi;

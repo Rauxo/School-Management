@@ -36,6 +36,12 @@ const staffSchema = mongoose.Schema(
             enum: ['active', 'inactive'],
             default: 'active',
         },
+        assignedBatches: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'Batch',
+            },
+        ],
     },
     {
         timestamps: true,
