@@ -351,7 +351,7 @@ const createExam = async (req, res) => {
     const exam = await Exam.create({
         title,
         description,
-        date,
+        examDate: date,
         maxMarks,
         passingMarks,
         batch: batchId || null

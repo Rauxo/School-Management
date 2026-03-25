@@ -1,12 +1,12 @@
 import React from 'react';
 import StudentLayout from '@/layouts/StudentLayout';
-import { useGetMaterialsQuery } from '@/api/services/materialsApi';
+import { useGetAdminMaterialsQuery } from '@/api/services/materialsApi';
 import { Card, CardContent } from '@/components/ui/Card';
 import { FileText, Download, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 
 const Materials = () => {
-    const { data: materials, isLoading } = useGetMaterialsQuery();
+    const { data: materials, isLoading } = useGetAdminMaterialsQuery();
 
     return (
         <StudentLayout>

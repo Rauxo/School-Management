@@ -13,7 +13,7 @@ const StudentFees = () => {
 
     const handlePay = async (feeId) => {
         try {
-            const { order } = await paymentService.createOrder(feeId);
+            const order = await paymentService.createOrder(feeId);
             
             const options = {
                 key: import.meta.env.VITE_RAZORPAY_KEY,
@@ -28,7 +28,6 @@ const StudentFees = () => {
                             razorpay_order_id: response.razorpay_order_id,
                             razorpay_payment_id: response.razorpay_payment_id,
                             razorpay_signature: response.razorpay_signature,
-                            feeId
                         });
                         toast.success('Payment successful!');
                         refetch();

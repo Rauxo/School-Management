@@ -22,6 +22,7 @@ const AdminLayout = ({ children }) => {
         { label: 'Fees', path: '/admin/fees', icon: CreditCard },
         { label: 'Exams', path: '/admin/exams', icon: FileText },
         { label: 'Notices', path: '/admin/notices', icon: Bell },
+        { label: 'Materials', path: '/admin/materials', icon: BookOpen },
     ];
 
     return (

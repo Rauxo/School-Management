@@ -3,8 +3,10 @@ import AdminLayout from '@/layouts/AdminLayout';
 import DataTable from '@/components/common/DataTable';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
-import { Plus, CreditCard, Download } from 'lucide-react';
+import { Plus, Download } from 'lucide-react';
 import { useGetFeesQuery, useCreateFeeMutation } from '@/api/services/feesApi';
+import { useGetStudentsQuery } from '@/api/services/studentsApi';
+import { useGetBatchesQuery } from '@/api/services/batchesApi';
 import Modal from '@/components/common/Modal';
 import { Input } from '@/components/ui/Input';
 import toast from 'react-hot-toast';
@@ -12,9 +14,12 @@ import toast from 'react-hot-toast';
 const Fees = () => {
     const [params, setParams] = useState({ page: 1, limit: 10, search: '' });
     const { data: fees, isLoading } = useGetFeesQuery(params);
+    const { data: studentsData } = useGetStudentsQuery({ limit: 1000 });
+    const { data: batches } = useGetBatchesQuery();
+
     const [isModalOpen, setModalOpen] = useState(false);
     const [createFee, { isLoading: isSaving }] = useCreateFeeMutation();
-    const [formData, setFormData] = useState({ studentId: '', title: '', amount: '', dueDate: '' });
+    const [formData, setFormData] = useState({ studentId: '', batchId: '', title: '', amount: '', dueDate: '' });
 
     const columns = [
         { 
@@ -50,11 +55,21 @@ const Fees = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await createFee(formData).unwrap();
+            // Remove empty strings to avoid sending them to backend
+            const submitData = { ...formData };
+            if (!submitData.studentId) delete submitData.studentId;
+            if (!submitData.batchId) delete submitData.batchId;
+
+            if (!submitData.studentId && !submitData.batchId) {
+                toast.error('Please select either a student or a batch');
+                return;
+            }
+
+            await createFee(submitData).unwrap();
             toast.success('Fee record generated successfully');
             setModalOpen(false);
-            setFormData({ studentId: '', title: '', amount: '', dueDate: '' });
-        } catch (err) { toast.error('Failed to generate fee record'); }
+            setFormData({ studentId: '', batchId: '', title: '', amount: '', dueDate: '' });
+        } catch (err) { toast.error(err.data?.message || 'Failed to generate fee record'); }
     };
 
     return (
@@ -80,12 +95,51 @@ const Fees = () => {
 
             <Modal isOpen={isModalOpen} onClose={() => setModalOpen(false)} title="Generate Fee Invoice">
                 <form onSubmit={handleSubmit} className="space-y-4">
-                    <Input placeholder="Student Database ID" value={formData.studentId} onChange={e => setFormData({...formData, studentId: e.target.value})} required />
+                    <div className="space-y-1">
+                        <label className="text-xs font-bold text-slate-500 uppercase">Assign to Student</label>
+                        <select 
+                            className="w-full h-10 px-3 rounded-md border border-slate-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+                            value={formData.studentId}
+                            onChange={e => setFormData({...formData, studentId: e.target.value, batchId: ''})}
+                            disabled={!!formData.batchId}
+                        >
+                            <option value="">Individual Student (Optional)</option>
+                            {studentsData?.map(s => (
+                                <option key={s._id} value={s._id}>{s.user?.name} ({s.rollNumber})</option>
+                            ))}
+                        </select>
+                    </div>
+
+                    <div className="relative flex items-center gap-4 py-2">
+                        <div className="flex-1 h-px bg-slate-100"></div>
+                        <span className="text-[10px] font-bold text-slate-300 uppercase">OR</span>
+                        <div className="flex-1 h-px bg-slate-100"></div>
+                    </div>
+
+                    <div className="space-y-1">
+                        <label className="text-xs font-bold text-slate-500 uppercase">Assign to entire Batch</label>
+                        <select 
+                            className="w-full h-10 px-3 rounded-md border border-slate-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+                            value={formData.batchId}
+                            onChange={e => setFormData({...formData, batchId: e.target.value, studentId: ''})}
+                            disabled={!!formData.studentId}
+                        >
+                            <option value="">Entire Batch (Optional)</option>
+                            {batches?.map(b => (
+                                <option key={b._id} value={b._id}>{b.name}</option>
+                            ))}
+                        </select>
+                    </div>
+
+                    <div className="h-px bg-slate-100 my-4"></div>
+
                     <Input placeholder="Invoice Title (e.g. Annual Tuition 2024)" value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} required />
+                    
                     <div className="grid grid-cols-2 gap-4">
                         <Input placeholder="Amount (₹)" type="number" value={formData.amount} onChange={e => setFormData({...formData, amount: e.target.value})} required />
                         <Input type="date" value={formData.dueDate} onChange={e => setFormData({...formData, dueDate: e.target.value})} required />
                     </div>
+                    
                     <div className="flex gap-3 justify-end mt-8">
                         <Button variant="outline" type="button" onClick={() => setModalOpen(false)}>Cancel</Button>
                         <Button type="submit" disabled={isSaving}>{isSaving ? 'Generating...' : 'Confirm Invoice'}</Button>

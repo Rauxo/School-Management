@@ -14,6 +14,7 @@ import Staff from "./pages/admin/Staff";
 import Fees from "./pages/admin/Fees";
 import Batches from "./pages/admin/Batches";
 import Exams from "./pages/admin/Exams";
+import Materials from "./pages/admin/Materials";
 import Attendance from "./pages/staff/Attendance";
 import MarksEntry from "./pages/staff/MarksEntry";
 import StudentDashboard from "./pages/student/Dashboard";
@@ -59,6 +60,7 @@ const AppRoutes = () => {
               <Route path="/admin/exams" element={<Exams />} />
               <Route path="/admin/fees" element={<Fees />} />
               <Route path="/admin/notices" element={<Notices />} />
+              <Route path="/admin/materials" element={<Materials />} />
             </Route>
 
             <Route element={<RoleRoute allowedRoles={["staff"]} />}>

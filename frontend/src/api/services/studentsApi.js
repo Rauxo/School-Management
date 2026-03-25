@@ -24,11 +24,20 @@ export const studentsApi = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ['Student', 'Dashboard'],
     }),
+    updateStudent: builder.mutation({
+      query: ({ id, ...data }) => ({
+        url: `/admin/students/${id}`,
+        method: 'PUT',
+        data,
+      }),
+      invalidatesTags: ['Student', 'Dashboard'],
+    }),
   }),
 });
 
 export const { 
     useGetStudentsQuery, 
     useAddStudentMutation, 
-    useDeleteStudentMutation 
+    useDeleteStudentMutation,
+    useUpdateStudentMutation
 } = studentsApi;

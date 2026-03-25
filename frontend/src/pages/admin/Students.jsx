@@ -3,8 +3,14 @@ import AdminLayout from '@/layouts/AdminLayout';
 import DataTable from '@/components/common/DataTable';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
-import { Plus, Trash2, Edit2, Eye } from 'lucide-react';
-import { useGetStudentsQuery, useDeleteStudentMutation, useAddStudentMutation } from '@/api/services/studentsApi';
+import { Plus, Trash2, Edit2 } from 'lucide-react';
+import { 
+  useGetStudentsQuery, 
+  useDeleteStudentMutation, 
+  useAddStudentMutation,
+  useUpdateStudentMutation 
+} from '@/api/services/studentsApi';
+import { useGetBatchesQuery } from '@/api/services/batchesApi';
 import Modal from '@/components/common/Modal';
 import { Input } from '@/components/ui/Input';
 import toast from 'react-hot-toast';
@@ -12,19 +18,28 @@ import toast from 'react-hot-toast';
 const Students = () => {
   const [params, setParams] = useState({ page: 1, limit: 10, search: '' });
   const { data: res, isLoading } = useGetStudentsQuery(params);
-  const [isAddModalOpen, setAddModalOpen] = useState(false);
+  const { data: batches } = useGetBatchesQuery();
   
   const [addStudent, { isLoading: isAdding }] = useAddStudentMutation();
+  const [updateStudent, { isLoading: isUpdating }] = useUpdateStudentMutation();
   const [deleteStudent] = useDeleteStudentMutation();
 
-  const [formData, setFormData] = useState({ name: '', email: '', password: '', rollNumber: '' });
+  const [isModalOpen, setModalOpen] = useState(false);
+  const [isEditMode, setEditMode] = useState(false);
+  const [currentId, setCurrentId] = useState(null);
+
+  const initialForm = { 
+    name: '', email: '', password: '', rollNumber: '', 
+    batchId: '', phone: '', address: '', parentName: '', parentPhone: '' 
+  };
+  const [formData, setFormData] = useState(initialForm);
 
   const columns = [
     { 
       header: 'Student', 
       cell: (row) => (
         <div className="flex items-center gap-3">
-          <div className="size-8 rounded-full bg-slate-100 flex items-center justify-center font-bold text-slate-500 text-xs">
+          <div className="size-8 rounded-full bg-slate-100 flex items-center justify-center font-bold text-slate-500 text-xs uppercase">
             {row.user?.name?.charAt(0)}
           </div>
           <div>
@@ -39,15 +54,19 @@ const Students = () => {
       header: 'Batch', 
       cell: (row) => row.batch ? <Badge variant="secondary">{row.batch.name}</Badge> : <Badge variant="outline">Unassigned</Badge>
     },
-    { 
-      header: 'Joined', 
-      cell: (row) => new Date(row.createdAt).toLocaleDateString() 
-    },
+    { header: 'Phone', accessor: 'phone' },
     { 
       header: 'Actions', 
       cell: (row) => (
         <div className="flex items-center gap-2">
-          <Button variant="ghost" size="sm" className="size-8 p-0 text-slate-400 hover:text-primary"><Edit2 size={14} /></Button>
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="size-8 p-0 text-slate-400 hover:text-primary"
+            onClick={() => handleEditClick(row)}
+          >
+            <Edit2 size={14} />
+          </Button>
           <Button 
             variant="ghost" 
             size="sm" 
@@ -61,6 +80,29 @@ const Students = () => {
     },
   ];
 
+  const handleEditClick = (student) => {
+    setEditMode(true);
+    setCurrentId(student._id);
+    setFormData({
+      name: student.user?.name || '',
+      email: student.user?.email || '',
+      password: '', // Keep empty for updates
+      rollNumber: student.rollNumber || '',
+      batchId: student.batch?._id || student.batch || '',
+      phone: student.phone || '',
+      address: student.address || '',
+      parentName: student.parentName || '',
+      parentPhone: student.parentPhone || ''
+    });
+    setModalOpen(true);
+  };
+
+  const handleOpenAdd = () => {
+    setEditMode(false);
+    setFormData(initialForm);
+    setModalOpen(true);
+  };
+
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this student?')) {
         try {
@@ -70,14 +112,19 @@ const Students = () => {
     }
   };
 
-  const handleAdd = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-        await addStudent(formData).unwrap();
-        toast.success('Student added successfully');
-        setAddModalOpen(false);
-        setFormData({ name: '', email: '', password: '', rollNumber: '' });
-    } catch (err) { toast.error(err.data?.message || 'Failed to add student'); }
+        if (isEditMode) {
+            await updateStudent({ id: currentId, ...formData }).unwrap();
+            toast.success('Student updated successfully');
+        } else {
+            await addStudent(formData).unwrap();
+            toast.success('Student added successfully');
+        }
+        setModalOpen(false);
+        setFormData(initialForm);
+    } catch (err) { toast.error(err.data?.message || 'Failed to save student'); }
   };
 
   return (
@@ -87,7 +134,7 @@ const Students = () => {
             <h1 className="text-2xl font-bold text-slate-800 tracking-tight">Student Management</h1>
             <p className="text-slate-500 text-sm italic">Manage your records and batch assignments.</p>
         </div>
-        <Button onClick={() => setAddModalOpen(true)} className="gap-2 shadow-lg shadow-primary/20">
+        <Button onClick={handleOpenAdd} className="gap-2 shadow-lg shadow-primary/20">
           <Plus size={18} /> Add Student
         </Button>
       </div>
@@ -100,31 +147,74 @@ const Students = () => {
       />
 
       <Modal 
-        isOpen={isAddModalOpen} 
-        onClose={() => setAddModalOpen(false)} 
-        title="Register New Student"
+        isOpen={isModalOpen} 
+        onClose={() => setModalOpen(false)} 
+        title={isEditMode ? "Edit Student" : "Register New Student"}
       >
-        <form onSubmit={handleAdd} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4 max-h-[70vh] overflow-y-auto px-1">
+            <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1">
+                    <label className="text-sm font-semibold text-slate-700">Full Name</label>
+                    <Input placeholder="John Doe" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} required />
+                </div>
+                <div className="space-y-1">
+                    <label className="text-sm font-semibold text-slate-700">Email Address</label>
+                    <Input type="email" placeholder="john@example.com" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} required />
+                </div>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1">
+                    <label className="text-sm font-semibold text-slate-700">{isEditMode ? "New Password (Leave blank to keep same)" : "Initial Password"}</label>
+                    <Input type="password" placeholder="••••••••" value={formData.password} onChange={e => setFormData({...formData, password: e.target.value})} required={!isEditMode} />
+                </div>
+                <div className="space-y-1">
+                    <label className="text-sm font-semibold text-slate-700">Roll Number</label>
+                    <Input placeholder="SM-2024-001" value={formData.rollNumber} onChange={e => setFormData({...formData, rollNumber: e.target.value})} required />
+                </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1">
+                    <label className="text-sm font-semibold text-slate-700">Batch</label>
+                    <select 
+                        className="w-full h-10 px-3 rounded-md border border-slate-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+                        value={formData.batchId}
+                        onChange={e => setFormData({...formData, batchId: e.target.value})}
+                        required
+                    >
+                        <option value="">Select Batch</option>
+                        {batches?.map(b => (
+                            <option key={b._id} value={b._id}>{b.name}</option>
+                        ))}
+                    </select>
+                </div>
+                <div className="space-y-1">
+                    <label className="text-sm font-semibold text-slate-700">Phone Number</label>
+                    <Input placeholder="1234567890" value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} />
+                </div>
+            </div>
+
             <div className="space-y-1">
-                <label className="text-sm font-semibold text-slate-700">Full Name</label>
-                <Input placeholder="John Doe" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} required />
+                <label className="text-sm font-semibold text-slate-700">Address</label>
+                <Input placeholder="123 Main St, City" value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} />
             </div>
-            <div className="space-y-1">
-                <label className="text-sm font-semibold text-slate-700">Email Address</label>
-                <Input type="email" placeholder="john@example.com" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} required />
+
+            <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1">
+                    <label className="text-sm font-semibold text-slate-700">Parent Name</label>
+                    <Input placeholder="Jane Doe" value={formData.parentName} onChange={e => setFormData({...formData, parentName: e.target.value})} />
+                </div>
+                <div className="space-y-1">
+                    <label className="text-sm font-semibold text-slate-700">Parent Phone</label>
+                    <Input placeholder="0987654321" value={formData.parentPhone} onChange={e => setFormData({...formData, parentPhone: e.target.value})} />
+                </div>
             </div>
-             <div className="space-y-1">
-                <label className="text-sm font-semibold text-slate-700">Initial Password</label>
-                <Input type="password" placeholder="••••••••" value={formData.password} onChange={e => setFormData({...formData, password: e.target.value})} required />
-            </div>
-            <div className="space-y-1">
-                <label className="text-sm font-semibold text-slate-700">Roll Number</label>
-                <Input placeholder="SM-2024-001" value={formData.rollNumber} onChange={e => setFormData({...formData, rollNumber: e.target.value})} required />
-            </div>
-            <div className="flex gap-3 justify-end mt-8">
-                <Button variant="outline" type="button" onClick={() => setAddModalOpen(false)}>Cancel</Button>
-                <Button type="submit" disabled={isAdding}>
-                    {isAdding ? 'Saving...' : 'Add Student'}
+
+            <div className="flex gap-3 justify-end mt-8 pt-4 border-t">
+                <Button variant="outline" type="button" onClick={() => setModalOpen(false)}>Cancel</Button>
+                <Button type="submit" disabled={isAdding || isUpdating}>
+                    {isAdding || isUpdating ? 'Saving...' : (isEditMode ? 'Update Student' : 'Add Student')}
                 </Button>
             </div>
         </form>

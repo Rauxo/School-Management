@@ -73,7 +73,7 @@ const StudentDashboard = () => {
                         </div>
                         <h4 className="font-bold text-slate-800 mb-1 leading-tight text-center">Your account is in good standing</h4>
                         <p className="text-xs text-slate-500 text-center px-4 leading-relaxed">All current academic and facility fees have been processed successfully.</p>
-                        <Button variant="outline" className="mt-6 w-full max-w-xs border-slate-200">View Invoices</Button>
+                        <button variant="outline" className="mt-6 w-full max-w-xs border-slate-200">View Invoices</button>
                     </CardContent>
                 </Card>
             </div>

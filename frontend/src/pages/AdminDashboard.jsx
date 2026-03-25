@@ -65,7 +65,7 @@ const AdminDashboard = () => {
               <TrendingUp className="size-5 text-slate-400" />
             </CardHeader>
             <CardContent>
-              <div className="h-[350px] w-full">
+              <div className="h-[350px] min-h-[350px] w-full relative">
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={chartData}>
                     <defs>
@@ -94,7 +94,7 @@ const AdminDashboard = () => {
               <CardTitle>Attendance Trends</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="h-[350px] w-full">
+              <div className="h-[350px] min-h-[350px] w-full relative">
                  <ResponsiveContainer width="100%" height="100%">
                    <BarChart data={chartData}>
                      <XAxis dataKey="name" fontSize={10} tickLine={false} axisLine={false} stroke="#94a3b8" />

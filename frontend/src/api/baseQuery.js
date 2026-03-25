@@ -1,7 +1,8 @@
 import API from './axios';
 
 const axiosBaseQuery = ({ baseUrl } = { baseUrl: '' }) =>
-  async ({ url, method, data, params, headers }) => {
+  async (args) => {
+    const { url, method, data, params, headers } = typeof args === 'string' ? { url: args } : args;
     try {
       const result = await API({ url: baseUrl + url, method, data, params, headers });
       return { data: result.data };
