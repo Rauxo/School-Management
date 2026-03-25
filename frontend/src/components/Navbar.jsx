@@ -15,16 +15,10 @@ function Navbar() {
     navigate("/login");
   };
 
-  // scroll detect
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 50) {
-        setHideTop(true);
-      } else {
-        setHideTop(false);
-      }
+      setHideTop(window.scrollY > 50);
     };
-
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -48,8 +42,14 @@ function Navbar() {
 
           {/* RIGHT */}
           <div className="flex gap-4 items-center">
-            <span className="cursor-pointer hover:text-gray-300 flex gap-2"><img src="https://img.icons8.com/?size=100&id=8808&format=png&color=FFFFFF" alt="" style={{"height":"20px", "width":"20px"}} />LinkedIn</span>
-            <span className="cursor-pointer hover:text-gray-300 flex gap-2"><img src="https://img.icons8.com/?size=100&id=118467&format=png&color=FFFFFF" alt="" style={{"height":"20px", "width":"20px"}} />Facebook</span>
+            <span className="cursor-pointer hover:text-gray-300 flex gap-2">
+              <img src="https://img.icons8.com/?size=100&id=8808&format=png&color=FFFFFF" className="h-5 w-5" />
+              LinkedIn
+            </span>
+            <span className="cursor-pointer hover:text-gray-300 flex gap-2">
+              <img src="https://img.icons8.com/?size=100&id=118467&format=png&color=FFFFFF" className="h-5 w-5" />
+              Facebook
+            </span>
           </div>
 
         </div>
@@ -64,7 +64,27 @@ function Navbar() {
             🎓 MyInstitute
           </Link>
 
-          {/* RIGHT SIDE */}
+          {/* NAV LINKS */}
+          <div className="hidden md:flex items-center gap-8 text-sm font-medium">
+
+            <Link to="/about" className="relative group">
+              About Us
+              <span className="absolute left-0 -bottom-1 w-0 h-[2px] bg-white transition-all group-hover:w-full"></span>
+            </Link>
+
+            <Link to="/staff" className="relative group">
+              Staff
+              <span className="absolute left-0 -bottom-1 w-0 h-[2px] bg-white transition-all group-hover:w-full"></span>
+            </Link>
+
+            <Link to="/batches" className="relative group">
+              Batches
+              <span className="absolute left-0 -bottom-1 w-0 h-[2px] bg-white transition-all group-hover:w-full"></span>
+            </Link>
+
+          </div>
+
+          {/* RIGHT SIDE (AUTH) */}
           {!user ? (
             <Link
               to="/login"
@@ -115,6 +135,7 @@ function Navbar() {
               )}
             </div>
           )}
+
         </div>
       </div>
     </div>

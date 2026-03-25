@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import PageLayout from "../layouts/PageLayout";
+import Welcome from "../components/Welcome";
+import Activities from "../components/Activities";
 
 function HomePage() {
   const images = [
@@ -18,15 +20,11 @@ function HomePage() {
 
   return (
     <PageLayout>
-
       {/* MAIN SECTION */}
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 px-6 pt-32 pb-10">
-
         <div className="max-w-7xl mx-auto w-full flex gap-6">
-
           {/* LEFT - IMAGE (70%) */}
           <div className="w-[70%] h-[75vh] relative overflow-hidden shadow-lg">
-
             {images.map((img, i) => (
               <img
                 key={i}
@@ -34,26 +32,20 @@ function HomePage() {
                 alt="Institute"
                 className={`absolute top-0 left-0 w-full h-full object-cover transition-all duration-1000 ease-in-out
                 ${
-                  i === index
-                    ? "opacity-100 scale-100"
-                    : "opacity-0 scale-105"
+                  i === index ? "opacity-100 scale-100" : "opacity-0 scale-105"
                 }`}
               />
             ))}
-
           </div>
 
           {/* RIGHT - NOTICE (30%) */}
           <div className="w-[30%] bg-white shadow-lg p-6 flex flex-col">
-
             <h2 className="text-2xl font-bold text-gray-800 mb-4 border-b pb-2">
               📢 Notification
             </h2>
 
             <div className="flex-1 overflow-hidden relative group">
-
               <div className="animate-scrollUpBottom group-hover:[animation-play-state:paused] space-y-5">
-
                 {[
                   "Admission open for 2026 batch",
                   "Mid-term exams starting from April 10",
@@ -70,15 +62,13 @@ function HomePage() {
                     <p>{notice}</p>
                   </div>
                 ))}
-
               </div>
-
             </div>
           </div>
-
         </div>
       </div>
-
+      <Welcome />
+      <Activities/>
     </PageLayout>
   );
 }
