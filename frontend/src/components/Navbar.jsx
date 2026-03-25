@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -8,92 +8,114 @@ function Navbar() {
   const navigate = useNavigate();
 
   const [open, setOpen] = useState(false);
+  const [hideTop, setHideTop] = useState(false);
 
   const handleLogout = () => {
     dispatch({ type: "auth/logout" });
     navigate("/login");
   };
 
+  // scroll detect
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 50) {
+        setHideTop(true);
+      } else {
+        setHideTop(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   return (
-    <div className="fixed top-0 left-0 w-full z-50 backdrop-blur-xl 
-    bg-gradient-to-r from-blue-100/40 via-purple-100/30 to-pink-100/40 
-    border-b border-white/30 shadow-[0_4px_20px_rgba(0,0,0,0.05)]">
+    <div className="fixed top-0 left-0 w-full z-50 font-[Roboto]">
 
-      <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-3">
+      {/* TOP BAR */}
+      <div
+        className={`bg-red-500 text-white text-sm px-6 py-2 transition-all duration-500 ${
+          hideTop ? "h-0 overflow-hidden py-0" : "h-auto"
+        }`}
+      >
+        <div className="max-w-7xl mx-auto flex justify-between items-center">
 
-        {/* LOGO */}
-        <Link 
-          to="/" 
-          className="text-xl font-bold text-gray-800 tracking-wide hover:opacity-80 transition"
-        >
-          🎓 MyInstitute
-        </Link>
-
-        {/* RIGHT SIDE */}
-        {!user ? (
-          <Link
-            to="/login"
-            className="px-5 py-2 rounded-xl 
-            bg-white/50 backdrop-blur-md 
-            border border-white/40 
-            shadow-[0_0_10px_rgba(59,130,246,0.2)] 
-            hover:shadow-[0_0_20px_rgba(59,130,246,0.35)] 
-            hover:bg-white/70 
-            transition"
-          >
-            Login
-          </Link>
-        ) : (
-          <div className="relative">
-
-            {/* USER BUTTON */}
-            <div
-              onClick={() => setOpen(!open)}
-              className="flex items-center gap-2 cursor-pointer 
-              bg-white/40 px-3 py-1.5 rounded-xl backdrop-blur-md 
-              border border-white/30
-              shadow-[0_0_10px_rgba(139,92,246,0.2)]
-              hover:shadow-[0_0_20px_rgba(139,92,246,0.35)]
-              hover:bg-white/60 transition"
-            >
-              <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 text-white flex items-center justify-center font-semibold">
-                {user.name?.charAt(0).toUpperCase()}
-              </div>
-
-              <span className="text-sm text-gray-800 capitalize">
-                {user.role}
-              </span>
-            </div>
-
-            {/* DROPDOWN */}
-            {open && (
-              <div className="absolute right-0 mt-2 w-52 
-              bg-white/60 backdrop-blur-xl 
-              rounded-xl shadow-[0_10px_30px_rgba(0,0,0,0.1)] 
-              border border-white/40 overflow-hidden">
-
-                <button
-                  onClick={() => {
-                    if (user.role === "admin") navigate("/admin/dashboard");
-                    else if (user.role === "staff") navigate("/staff/dashboard");
-                    else navigate("/student/dashboard");
-                  }}
-                  className="w-full text-left px-4 py-2 hover:bg-white/50 transition"
-                >
-                  🚀 Go to Dashboard
-                </button>
-
-                <button
-                  onClick={handleLogout}
-                  className="w-full text-left px-4 py-2 hover:bg-red-100 text-red-500 transition"
-                >
-                  🔴 Logout
-                </button>
-
-              </div>
-            )}
+          {/* LEFT */}
+          <div className="flex gap-4 items-center">
+            <span>🕿 +91 1234567890</span>
+            <span>✉️ info@myinstitute.com</span>
           </div>
-        )}
+
+          {/* RIGHT */}
+          <div className="flex gap-4 items-center">
+            <span className="cursor-pointer hover:text-gray-300 flex gap-2"><img src="https://img.icons8.com/?size=100&id=8808&format=png&color=FFFFFF" alt="" style={{"height":"20px", "width":"20px"}} />LinkedIn</span>
+            <span className="cursor-pointer hover:text-gray-300 flex gap-2"><img src="https://img.icons8.com/?size=100&id=118467&format=png&color=FFFFFF" alt="" style={{"height":"20px", "width":"20px"}} />Facebook</span>
+          </div>
+
+        </div>
+      </div>
+
+      {/* MAIN NAVBAR */}
+      <div className="bg-blue-800 text-white shadow-md">
+        <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-3">
+
+          {/* LOGO */}
+          <Link to="/" className="text-xl font-bold tracking-wide">
+            🎓 MyInstitute
+          </Link>
+
+          {/* RIGHT SIDE */}
+          {!user ? (
+            <Link
+              to="/login"
+              className="px-5 py-2 rounded-lg bg-white text-blue-800 font-medium hover:bg-gray-200 transition"
+            >
+              Login
+            </Link>
+          ) : (
+            <div className="relative">
+
+              {/* USER */}
+              <div
+                onClick={() => setOpen(!open)}
+                className="flex items-center gap-2 cursor-pointer bg-blue-700 px-3 py-1.5 rounded-lg hover:bg-blue-600 transition"
+              >
+                <div className="w-8 h-8 rounded-full bg-white text-blue-800 flex items-center justify-center font-semibold">
+                  {user.name?.charAt(0).toUpperCase()}
+                </div>
+
+                <span className="capitalize text-sm">
+                  {user.role}
+                </span>
+              </div>
+
+              {/* DROPDOWN */}
+              {open && (
+                <div className="absolute right-0 mt-2 w-52 bg-white text-black rounded-lg shadow-lg overflow-hidden">
+
+                  <button
+                    onClick={() => {
+                      if (user.role === "admin") navigate("/admin/dashboard");
+                      else if (user.role === "staff") navigate("/staff/dashboard");
+                      else navigate("/student/dashboard");
+                    }}
+                    className="w-full text-left px-4 py-2 hover:bg-gray-100"
+                  >
+                    🚀 Dashboard
+                  </button>
+
+                  <button
+                    onClick={handleLogout}
+                    className="w-full text-left px-4 py-2 hover:bg-red-100 text-red-500"
+                  >
+                    Logout
+                  </button>
+
+                </div>
+              )}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

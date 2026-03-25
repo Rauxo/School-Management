@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+body {
+  font-family: 'Roboto', sans-serif;
+}
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -57,7 +60,30 @@
     @apply bg-background text-foreground;
   }
 }
+@keyframes scrollUp {
+  0% {
+    transform: translateY(0%);
+  }
+  100% {
+    transform: translateY(-50%);
+  }
+}
 
+.animate-scrollUp {
+  animation: scrollUp 10s linear infinite;
+}
+@keyframes scrollUpBottom {
+  0% {
+    transform: translateY(100%);
+  }
+  100% {
+    transform: translateY(-100%);
+  }
+}
+
+.animate-scrollUpBottom {
+  animation: scrollUpBottom 12s linear infinite;
+}
 @keyframes slideImage {
   from {
     opacity: 0;
