@@ -6,7 +6,7 @@ import {
   Navigate,
   useLocation,
 } from "react-router-dom";
-import "./index.css"
+import "./index.css";
 import Login from "./pages/Login";
 import AdminDashboard from "./pages/AdminDashboard";
 import Students from "./pages/admin/Students";
@@ -17,7 +17,7 @@ import Exams from "./pages/admin/Exams";
 import Materials from "./pages/admin/Materials";
 import AdminResults from "./pages/admin/Results";
 import AdminStaffAttendance from "./pages/admin/StaffAttendance";
-import AdminCertificates from './pages/admin/Certificates';
+import AdminCertificates from "./pages/admin/Certificates";
 import Attendance from "./pages/staff/Attendance";
 import StaffStudents from "./pages/staff/Students";
 import MarksEntry from "./pages/staff/MarksEntry";
@@ -35,6 +35,7 @@ import StaffMaterials from "./pages/staff/Materials";
 import { ProtectedRoute, RoleRoute } from "./routes/Guards";
 import { Toaster } from "react-hot-toast";
 import { useSelector } from "react-redux";
+import HomePage from "./pages/HomePage";
 
 const AppRoutes = () => {
   const { user, isLoading } = useSelector((state) => state.auth);
@@ -64,13 +65,19 @@ const AppRoutes = () => {
               <Route path="/admin/dashboard" element={<AdminDashboard />} />
               <Route path="/admin/students" element={<Students />} />
               <Route path="/admin/staff" element={<Staff />} />
-              <Route path="/admin/staff-attendance" element={<AdminStaffAttendance />} />
+              <Route
+                path="/admin/staff-attendance"
+                element={<AdminStaffAttendance />}
+              />
               <Route path="/admin/batches" element={<Batches />} />
               <Route path="/admin/exams" element={<Exams />} />
               <Route path="/admin/fees" element={<Fees />} />
               <Route path="/admin/notices" element={<Notices />} />
               <Route path="/admin/materials" element={<Materials />} />
-              <Route path="/admin/certificates" element={<AdminCertificates />} />
+              <Route
+                path="/admin/certificates"
+                element={<AdminCertificates />}
+              />
               <Route path="/admin/results" element={<AdminResults />} />
             </Route>
 
@@ -102,7 +109,7 @@ const AppRoutes = () => {
               <Route path="/student/notices" element={<Notices />} />
             </Route>
           </Route>
-          <Route
+          {/* <Route
             path="/"
             element={
               isLoading ? (
@@ -117,6 +124,10 @@ const AppRoutes = () => {
                 <Navigate to="/student/dashboard" replace />
               )
             }
+          /> */}
+          <Route
+            path="/"
+            element={isLoading ? <div>Loading...</div> : <HomePage />}
           />
           {/* <Route path="/" element={<HomeRedirect />} /> */}
           <Route path="*" element={<Navigate to="/login" replace />} />
