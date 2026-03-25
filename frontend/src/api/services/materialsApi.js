@@ -17,10 +17,27 @@ export const materialsApi = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ['Material'],
     }),
+    // ✅ Staff materials
+    getStaffMaterials: builder.query({
+      query: () => '/staff/materials',
+      providesTags: ['Material'],
+    }),
+
+    // ✅ Staff Upload material
+    uploadStaffMaterial: builder.mutation({
+      query: (data) => ({
+        url: '/staff/materials',
+        method: 'POST',
+        data,
+      }),
+      invalidatesTags: ['Material'],
+    }),
   }),
 });
 
 export const {
   useGetAdminMaterialsQuery,
   useUploadMaterialMutation,
+  useGetStaffMaterialsQuery,
+  useUploadStaffMaterialMutation,
 } = materialsApi;

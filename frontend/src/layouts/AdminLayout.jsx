@@ -21,6 +21,7 @@ const AdminLayout = ({ children }) => {
         { label: 'Batches', path: '/admin/batches', icon: BookOpen },
         { label: 'Fees', path: '/admin/fees', icon: CreditCard },
         { label: 'Exams', path: '/admin/exams', icon: FileText },
+        { label: 'Results', path: '/admin/results', icon: BookOpen },
         { label: 'Notices', path: '/admin/notices', icon: Bell },
         { label: 'Materials', path: '/admin/materials', icon: BookOpen },
     ];

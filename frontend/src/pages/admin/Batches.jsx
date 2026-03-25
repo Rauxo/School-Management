@@ -13,7 +13,7 @@ const Batches = () => {
     const { data: batches, isLoading } = useGetBatchesQuery();
     const [isModalOpen, setModalOpen] = useState(false);
     const [createBatch, { isLoading: isSaving }] = useCreateBatchMutation();
-    const [formData, setFormData] = useState({ name: '', description: '', schedule: '' });
+    const [formData, setFormData] = useState({ name: '', description: '', schedule: '', startDate: '', endDate: '' });
 
     const columns = [
         { 
@@ -32,8 +32,16 @@ const Batches = () => {
         },
         { header: 'Schedule', accessor: 'schedule', cell: (row) => <div className="flex items-center gap-2 text-slate-600"><Calendar size={14} /> {row.schedule}</div> },
         { 
-            header: 'Students', 
-            cell: (row) => <Badge variant="secondary" className="bg-slate-100 text-slate-600 border-none">{row.students?.length || 0} enrolled</Badge> 
+            header: 'Timeline', 
+            cell: (row) => (
+                <div className="text-[11px] font-medium text-slate-500">
+                    {row.startDate ? new Date(row.startDate).toLocaleDateString() : 'N/A'} - {row.endDate ? new Date(row.endDate).toLocaleDateString() : 'N/A'}
+                </div>
+            )
+        },
+        { 
+            header: 'Enrolled', 
+            cell: (row) => <Badge variant="secondary" className="bg-slate-100 text-slate-600 border-none font-bold">{row.students?.length || 0} Students</Badge> 
         },
         { 
             header: 'Status', 
@@ -47,7 +55,7 @@ const Batches = () => {
             await createBatch(formData).unwrap();
             toast.success('New batch created successfully');
             setModalOpen(false);
-            setFormData({ name: '', description: '', schedule: '' });
+            setFormData({ name: '', description: '', schedule: '', startDate: '', endDate: '' });
         } catch (err) { toast.error('Creation failed'); }
     };
 
@@ -69,6 +77,16 @@ const Batches = () => {
                 <form onSubmit={handleSubmit} className="space-y-4 pt-4">
                     <Input placeholder="Batch Name (e.g. Morning 2024)" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} required />
                     <Input placeholder="Brief Description" value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} required />
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-1">
+                            <label className="text-xs font-bold text-slate-500 uppercase">Start Date</label>
+                            <Input type="date" value={formData.startDate} onChange={e => setFormData({...formData, startDate: e.target.value})} required />
+                        </div>
+                        <div className="space-y-1">
+                            <label className="text-xs font-bold text-slate-500 uppercase">End Date</label>
+                            <Input type="date" value={formData.endDate} onChange={e => setFormData({...formData, endDate: e.target.value})} required />
+                        </div>
+                    </div>
                     <Input placeholder="Schedule (e.g. Mon-Fri, 9AM-12PM)" value={formData.schedule} onChange={e => setFormData({...formData, schedule: e.target.value})} required />
                     <div className="flex gap-3 justify-end mt-8">
                         <Button variant="outline" type="button" onClick={() => setModalOpen(false)}>Cancel</Button>

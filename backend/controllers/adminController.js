@@ -7,6 +7,8 @@ const Exam = require('../models/examModel');
 const Notice = require('../models/noticeModel');
 const Material = require('../models/materialModel');
 const StaffAttendance = require('../models/staffAttendanceModel');
+const Attendance = require('../models/attendanceModel');
+const Result = require('../models/resultModel');
 
 // @desc    Add new student
 // @route   POST /api/admin/students
@@ -190,13 +192,14 @@ const deleteStaff = async (req, res) => {
 // @route   POST /api/admin/batches
 // @access  Private/Admin
 const addBatch = async (req, res) => {
-    const { name, description, startDate, endDate } = req.body;
+    const { name, description, startDate, endDate, schedule } = req.body;
 
     const batch = await Batch.create({
         name,
         description,
         startDate,
-        endDate
+        endDate,
+        schedule
     });
 
     res.status(201).json(batch);
@@ -206,8 +209,21 @@ const addBatch = async (req, res) => {
 // @route   GET /api/admin/batches
 // @access  Private/Admin
 const getBatches = async (req, res) => {
-    const batches = await Batch.find({});
-    res.json(batches);
+    try {
+        const batches = await Batch.aggregate([
+            {
+                $lookup: {
+                    from: "students",
+                    localField: "_id",
+                    foreignField: "batch",
+                    as: "students"
+                }
+            }
+        ]);
+        res.json(batches);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
 };
 
 // @desc    Update batch
@@ -221,6 +237,7 @@ const updateBatch = async (req, res) => {
         batch.description = req.body.description || batch.description;
         batch.startDate = req.body.startDate || batch.startDate;
         batch.endDate = req.body.endDate || batch.endDate;
+        batch.schedule = req.body.schedule || batch.schedule;
         batch.active = req.body.active !== undefined ? req.body.active : batch.active;
 
         const updatedBatch = await batch.save();
@@ -248,13 +265,74 @@ const getDashboardStats = async (req, res) => {
             }
         }
     ]);
+    const last7Days = [];
+    for (let i = 6; i >= 0; i--) {
+        const d = new Date();
+        d.setDate(d.getDate() - i);
+        last7Days.push({
+            date: d.toISOString().split('T')[0],
+            name: d.toLocaleDateString('en-US', { weekday: 'short' }),
+            income: 0,
+            students: 0
+        });
+    }
+
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+    const recentFees = await Fee.aggregate([
+        { $match: { status: 'paid', updatedAt: { $gte: sevenDaysAgo } } },
+        { $group: {
+            _id: { $dateToString: { format: "%Y-%m-%d", date: "$updatedAt" } },
+            total: { $sum: "$amount" }
+        }}
+    ]);
+
+    const recentAttendance = await Attendance.aggregate([
+        { $match: { status: 'present', date: { $gte: sevenDaysAgo } } },
+        { $group: {
+            _id: { $dateToString: { format: "%Y-%m-%d", date: "$date" } },
+            count: { $sum: 1 }
+        }}
+    ]);
+
+    const chartData = last7Days.map(day => {
+        const feeRecord = recentFees.find(f => f._id === day.date);
+        const attRecord = recentAttendance.find(a => a._id === day.date);
+        return {
+            name: day.name,
+            income: feeRecord ? feeRecord.total : 0,
+            students: attRecord ? attRecord.count : 0
+        };
+    });
+
+    const currentYear = new Date().getFullYear();
+    const monthlyIncome = await Fee.aggregate([
+        { $match: { status: 'paid', updatedAt: { $gte: new Date(`${currentYear}-01-01`) } } },
+        { $group: {
+            _id: { $month: "$updatedAt" },
+            total: { $sum: "$amount" }
+        }},
+        { $sort: { "_id": 1 } }
+    ]);
+
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const monthlyData = months.map((month, index) => {
+        const record = monthlyIncome.find(m => m._id === index + 1);
+        return {
+            name: month,
+            income: record ? record.total : 0
+        };
+    });
 
     const stats = {
         totalStudents,
         totalStaff,
         totalBatches,
         totalFeesCollected: feeStats.length > 0 ? feeStats[0].totalCollected : 0,
-        pendingDues: feeStats.length > 0 ? feeStats[0].pendingDues : 0
+        pendingDues: feeStats.length > 0 ? feeStats[0].pendingDues : 0,
+        chartData,
+        monthlyData
     };
 
     res.json(stats);
@@ -344,7 +422,7 @@ const getIncomeReport = async (req, res) => {
 // @route   GET /api/admin/exams
 // @access  Private/Admin
 const getExams = async (req, res) => {
-    const exams = await Exam.find({});
+    const exams = await Exam.find({}).populate('batch', 'name');
     res.json(exams);
 };
 
@@ -364,15 +442,42 @@ const createExam = async (req, res) => {
     res.status(201).json(exam);
 };
 
+// @desc    Get all results
+// @route   GET /api/admin/results
+// @access  Private/Admin
+const getAllResults = async (req, res) => {
+    const results = await Result.find({}).populate('exam', 'title maxMarks passingMarks').populate({
+        path: 'student',
+        populate: { path: 'user', select: 'name' }
+    });
+    res.json(results);
+};
+
 // @desc    Get all staff attendance
 // @route   GET /api/admin/staff-attendance
 // @access  Private/Admin
 const getStaffAttendanceAdmin = async (req, res) => {
-    const attendance = await StaffAttendance.find({}).populate({
+    const records = await StaffAttendance.find({}).populate({
         path: 'staff',
         populate: { path: 'user', select: 'name email' }
+    }).sort({ date: -1 });
+
+    const summaryData = await StaffAttendance.aggregate([
+        {
+            $group: {
+                _id: "$staff",
+                present: { $sum: { $cond: [{ $eq: ["$status", "present"] }, 1, 0] } },
+                absent: { $sum: { $cond: [{ $eq: ["$status", "absent"] }, 1, 0] } }
+            }
+        }
+    ]);
+
+    const populatedSummary = await Staff.populate(summaryData, {
+        path: '_id',
+        populate: { path: 'user', select: 'name email' }
     });
-    res.json(attendance);
+
+    res.json({ records, summary: populatedSummary });
 };
 
 // @desc    Approve Online Payment
@@ -420,6 +525,6 @@ module.exports = {
     uploadMaterial,
     getAdminMaterials,
     getIncomeReport,
-    getExams, createExam,
+    getExams, createExam, getAllResults,
     getStaffAttendanceAdmin, approvePayment, downloadIncomeReport
 };

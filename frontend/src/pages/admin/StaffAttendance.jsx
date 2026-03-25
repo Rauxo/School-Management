@@ -5,10 +5,10 @@ import { Badge } from '@/components/ui/Badge';
 import { useGetStaffAttendanceAdminQuery } from '@/api/services/dashboardApi';
 
 const StaffAttendance = () => {
-    const { data: attendanceData, isLoading } = useGetStaffAttendanceAdminQuery();
+    const { data, isLoading } = useGetStaffAttendanceAdminQuery();
     const [params, setParams] = useState({ page: 1, limit: 10, search: '' });
 
-    const columns = [
+    const logColumns = [
         { 
             header: 'Date', 
             cell: (row) => new Date(row.date).toLocaleDateString() 
@@ -32,6 +32,30 @@ const StaffAttendance = () => {
         }
     ];
 
+    const summaryColumns = [
+        { 
+            header: 'Staff Member', 
+            cell: (row) => (
+                <div className="flex items-center gap-2">
+                    <div className="size-8 rounded bg-primary/10 text-primary flex items-center justify-center font-bold text-xs">
+                        {row._id?.user?.name?.charAt(0)}
+                    </div>
+                    <div>
+                        <p className="font-bold text-slate-800">{row._id?.user?.name}</p>
+                    </div>
+                </div>
+            )
+        },
+        { 
+            header: 'Present Days', 
+            cell: (row) => <span className="font-bold text-green-600">{row.present}</span>
+        },
+        { 
+            header: 'Absent Days', 
+            cell: (row) => <span className="font-bold text-red-600">{row.absent}</span>
+        }
+    ];
+
     return (
         <AdminLayout>
             <div className="flex justify-between items-center mb-8">
@@ -41,12 +65,24 @@ const StaffAttendance = () => {
                 </div>
             </div>
 
-            <DataTable 
-                columns={columns} 
-                data={attendanceData || []} 
-                isLoading={isLoading} 
-                onSearch={v => setParams({...params, search: v})} 
-            />
+            <div className="mb-10">
+                <h2 className="text-lg font-bold text-slate-700 mb-4">Overall Summary</h2>
+                <DataTable 
+                    columns={summaryColumns} 
+                    data={data?.summary || []} 
+                    isLoading={isLoading} 
+                />
+            </div>
+
+            <div>
+                <h2 className="text-lg font-bold text-slate-700 mb-4">Daily Logs</h2>
+                <DataTable 
+                    columns={logColumns} 
+                    data={data?.records || []} 
+                    isLoading={isLoading} 
+                    onSearch={v => setParams({...params, search: v})} 
+                />
+            </div>
         </AdminLayout>
     );
 };

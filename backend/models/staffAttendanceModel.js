@@ -12,6 +12,10 @@ const staffAttendanceSchema = mongoose.Schema(
             required: true,
             default: Date.now,
         },
+        dateString: {
+            type: String,
+            required: true,
+        },
         status: {
             type: String,
             enum: ['present', 'absent', 'leave'],
@@ -26,6 +30,8 @@ const staffAttendanceSchema = mongoose.Schema(
         timestamps: true,
     }
 );
+
+staffAttendanceSchema.index({ staff: 1, dateString: 1 }, { unique: true });
 
 const StaffAttendance = mongoose.model('StaffAttendance', staffAttendanceSchema);
 

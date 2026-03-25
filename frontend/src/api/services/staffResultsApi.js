@@ -10,7 +10,19 @@ export const staffResultsApi = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ['Exam', 'Dashboard'],
     }),
+    getStaffExams: builder.query({
+      query: () => '/staff/exams',
+      providesTags: ['Exam'],
+    }),
+    createStaffExam: builder.mutation({
+      query: (data) => ({
+        url: '/staff/exams',
+        method: 'POST',
+        data: data,
+      }),
+      invalidatesTags: ['Exam'],
+    }),
   }),
 });
 
-export const { useEnterMarksMutation } = staffResultsApi;
+export const { useEnterMarksMutation, useGetStaffExamsQuery, useCreateStaffExamMutation } = staffResultsApi;

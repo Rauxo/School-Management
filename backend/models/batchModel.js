@@ -20,6 +20,9 @@ const batchSchema = mongoose.Schema(
             type: Boolean,
             default: true,
         },
+        schedule: {
+            type: String,
+        },
     },
     {
         timestamps: true,

@@ -1,19 +1,19 @@
 import React, { useState } from 'react';
-import AdminLayout from '@/layouts/AdminLayout';
+import StaffLayout from '@/layouts/StaffLayout';
 import DataTable from '@/components/common/DataTable';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { Plus, Trash2, FileText, Download } from 'lucide-react';
-import { useGetAdminMaterialsQuery, useUploadMaterialMutation } from '@/api/services/materialsApi';
-import { useGetBatchesQuery } from '@/api/services/batchesApi';
+import { useGetStaffMaterialsQuery, useUploadStaffMaterialMutation } from '@/api/services/materialsApi';
+import { useGetMyBatchesQuery } from '@/api/services/dashboardApi';
 import Modal from '@/components/common/Modal';
 import { Input } from '@/components/ui/Input';
 import toast from 'react-hot-toast';
 
 const Materials = () => {
-    const { data: materials, isLoading } = useGetAdminMaterialsQuery();
-    const { data: batches } = useGetBatchesQuery();
-    const [uploadMaterial, { isLoading: isSaving }] = useUploadMaterialMutation();
+    const { data: materials, isLoading } = useGetStaffMaterialsQuery();
+    const { data: batches } = useGetMyBatchesQuery();
+    const [uploadMaterial, { isLoading: isSaving }] = useUploadStaffMaterialMutation();
     const [isModalOpen, setModalOpen] = useState(false);
     
     const [formData, setFormData] = useState({ 
@@ -56,9 +56,6 @@ const Materials = () => {
                             <Download size={14} />
                         </a>
                     </Button>
-                    <Button variant="ghost" size="sm" className="size-8 p-0 text-red-400 hover:text-red-600">
-                        <Trash2 size={14} />
-                    </Button>
                 </div>
             )
         }
@@ -87,11 +84,11 @@ const Materials = () => {
     };
 
     return (
-        <AdminLayout>
+        <StaffLayout>
             <div className="flex justify-between items-center mb-8">
                 <div>
                     <h1 className="text-2xl font-extrabold text-slate-800 tracking-tight">Study Materials</h1>
-                    <p className="text-slate-500 text-sm">Upload notes, assignments and resources for students.</p>
+                    <p className="text-slate-500 text-sm">Upload notes, assignments and resources for your students.</p>
                 </div>
                 <Button onClick={() => setModalOpen(true)} className="gap-2 shadow-lg shadow-indigo-500/10">
                     <Plus size={18} /> Upload Material
@@ -154,7 +151,7 @@ const Materials = () => {
                     </div>
                 </form>
             </Modal>
-        </AdminLayout>
+        </StaffLayout>
     );
 };
 

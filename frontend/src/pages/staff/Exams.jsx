@@ -1,19 +1,19 @@
 import React, { useState } from 'react';
-import AdminLayout from '@/layouts/AdminLayout';
+import StaffLayout from '@/layouts/StaffLayout';
 import DataTable from '@/components/common/DataTable';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { Plus, Calendar, FileText } from 'lucide-react';
-import { useGetExamsQuery, useCreateExamMutation } from '@/api/services/examsApi';
-import { useGetBatchesQuery } from '@/api/services/batchesApi';
+import { useGetStaffExamsQuery, useCreateStaffExamMutation } from '@/api/services/staffResultsApi';
+import { useGetMyBatchesQuery } from '@/api/services/dashboardApi';
 import Modal from '@/components/common/Modal';
 import { Input } from '@/components/ui/Input';
 import toast from 'react-hot-toast';
 
 const Exams = () => {
-    const { data: exams, isLoading } = useGetExamsQuery();
-    const { data: batches } = useGetBatchesQuery();
-    const [createExam, { isLoading: isSaving }] = useCreateExamMutation();
+    const { data: exams, isLoading } = useGetStaffExamsQuery();
+    const { data: batches } = useGetMyBatchesQuery();
+    const [createExam, { isLoading: isSaving }] = useCreateStaffExamMutation();
     const [isModalOpen, setModalOpen] = useState(false);
     
     const [formData, setFormData] = useState({ 
@@ -37,7 +37,7 @@ const Exams = () => {
         },
         { 
             header: 'Batch', 
-            cell: (row) => row.batch ? <Badge variant="secondary">{row.batch.name}</Badge> : <Badge variant="outline">All Batches</Badge>
+            cell: (row) => row.batch ? <Badge variant="secondary">{row.batch.name}</Badge> : <Badge variant="outline">Unassigned</Badge>
         },
         { 
             header: 'Schedule', 
@@ -65,11 +65,11 @@ const Exams = () => {
     };
 
     return (
-        <AdminLayout>
+        <StaffLayout>
             <div className="flex justify-between items-center mb-8">
                 <div>
-                    <h1 className="text-2xl font-extrabold text-slate-800 tracking-tight">Examinations</h1>
-                    <p className="text-slate-500 text-sm">Schedule and manage institutional assessments.</p>
+                    <h1 className="text-2xl font-extrabold text-slate-800 tracking-tight">Manage Exams</h1>
+                    <p className="text-slate-500 text-sm">Schedule and manage assessments for your assigned batches.</p>
                 </div>
                 <Button onClick={() => setModalOpen(true)} className="gap-2 shadow-lg shadow-orange-500/10">
                     <Plus size={18} /> Schedule Exam
@@ -124,7 +124,7 @@ const Exams = () => {
                     </div>
                 </form>
             </Modal>
-        </AdminLayout>
+        </StaffLayout>
     );
 };
 

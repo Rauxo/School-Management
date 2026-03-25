@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Users, Clock, FileEdit, Bell, LogOut, Menu, X } from 'lucide-react';
+import { LayoutDashboard, Users, Clock, FileEdit, FileText, Bell, LogOut, Menu, X, FileDigit ,BookOpen } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '@/features/auth/authSlice';
 import { cn } from '@/utils/cn';
@@ -13,8 +13,12 @@ const StaffLayout = ({ children }) => {
 
     const menuItems = [
         { label: 'Dashboard', path: '/staff/dashboard', icon: LayoutDashboard },
+        { label: 'Students', path: '/staff/students', icon: Users },
         { label: 'Attendance', path: '/staff/attendance', icon: Clock },
         { label: 'Enter Marks', path: '/staff/marks', icon: FileEdit },
+        { label: 'Exams', path: '/staff/exams', icon: FileText },
+        { label: 'Materials', path: '/staff/materials', icon: BookOpen },
+        { label: 'Results', path: '/staff/results', icon: FileDigit },
         { label: 'Notices', path: '/staff/notices', icon: Bell },
     ];
 

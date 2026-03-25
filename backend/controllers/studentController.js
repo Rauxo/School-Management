@@ -8,16 +8,29 @@ const Notice = require('../models/noticeModel');
 // @route   GET /api/student/profile
 // @access  Private/Student
 const getStudentProfile = async (req, res) => {
-    const student = await Student.findOne({ user: req.user._id }).populate('batch', 'name');
+    const student = await Student.findOne({ user: req.user._id }).populate('batch', 'name startDate endDate');
     if (!student) return res.status(404).json({ message: 'Student profile not found' });
 
     const attendance = await Attendance.find({ student: student._id });
     const results = await Result.find({ student: student._id }).populate('exam', 'title maxMarks passingMarks');
     
     // Calculate attendance percentage
-    const totalDays = attendance.length;
-    const presentDays = attendance.filter(a => a.status === 'present').length;
-    const attendancePercentage = totalDays > 0 ? (presentDays / totalDays) * 100 : 0;
+    let attendancePercentage = 0;
+    if (student.batch && student.batch.startDate) {
+        const start = new Date(student.batch.startDate);
+        const today = new Date();
+        if (today >= start) {
+            const diffTime = today - start;
+            const totalWorkingDays = Math.max(1, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
+            const presentDays = attendance.filter(a => a.status === 'present').length;
+            attendancePercentage = (presentDays / totalWorkingDays) * 100;
+            if (attendancePercentage > 100) attendancePercentage = 100;
+        }
+    } else {
+        const totalDays = attendance.length;
+        const presentDays = attendance.filter(a => a.status === 'present').length;
+        attendancePercentage = totalDays > 0 ? (presentDays / totalDays) * 100 : 0;
+    }
 
     res.json({
         student,

@@ -12,15 +12,9 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 const AdminDashboard = () => {
   const { data: stats, isLoading } = useGetAdminStatsQuery();
 
-  const chartData = [
-    { name: 'Mon', income: 4000, students: 240 },
-    { name: 'Tue', income: 3000, students: 139 },
-    { name: 'Wed', income: 2000, students: 980 },
-    { name: 'Thu', income: 2780, students: 3908 },
-    { name: 'Fri', income: 1890, students: 4800 },
-    { name: 'Sat', income: 2390, students: 3800 },
-    { name: 'Sun', income: 3490, students: 4300 },
-  ];
+  const chartData = stats?.chartData || [];
+  const monthlyData = stats?.monthlyData || [];
+
 
   return (
     <AdminLayout>
@@ -67,7 +61,7 @@ const AdminDashboard = () => {
             <CardContent>
               <div className="h-[350px] min-h-[350px] w-full relative">
                 <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={chartData}>
+                  <AreaChart data={monthlyData}>
                     <defs>
                       <linearGradient id="colorIncome" x1="0" y1="0" x2="0" y2="1">
                         <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.1}/>

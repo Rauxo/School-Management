@@ -1,33 +1,69 @@
-import React from 'react';
+import React, { useState } from 'react';
 import StaffLayout from '@/layouts/StaffLayout';
 import StatCard from '@/components/common/StatCard';
-import { Users, Clock, FileEdit, BarChart3, Bell, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Users, Clock, FileEdit, Bell, CheckCircle2, AlertCircle, Fingerprint } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
+import { Button } from '@/components/ui/Button';
 import { useGetStaffDashboardStatsQuery, useGetMyBatchesQuery } from '@/api/services/dashboardApi';
 import { useGetNoticesQuery } from '@/api/services/noticesApi';
+import { useGetMyAttendanceQuery, useMarkMyAttendanceMutation } from '@/api/services/staffAttendanceApi';
 import { useSelector } from 'react-redux';
+import toast from 'react-hot-toast';
 
 const StaffDashboard = () => {
     const { user } = useSelector(state => state.auth);
     const { data: stats, isLoading: statsLoading } = useGetStaffDashboardStatsQuery();
     const { data: batches, isLoading: batchesLoading } = useGetMyBatchesQuery();
     const { data: notices } = useGetNoticesQuery();
+    const { data: myAttendance } = useGetMyAttendanceQuery();
+    const [markAttendance, { isLoading: isMarking }] = useMarkMyAttendanceMutation();
 
-    // Recent notices (last 3)
     const recentNotices = notices?.slice(0, 3) || [];
 
-    const attendanceDisplay = statsLoading
-        ? '—'
-        : stats?.attendanceMarkedToday
-            ? `${stats.attendanceRate}%`
-            : 'Not Marked';
+    // Check if attendance is already marked today
+    const todayStr = new Date().toISOString().split('T')[0];
+    const todayRecord = myAttendance?.find(a => new Date(a.date).toISOString().split('T')[0] === todayStr);
+
+    const handleMarkAttendance = async (status) => {
+        try {
+            await markAttendance({ status }).unwrap();
+            toast.success(`Attendance marked as ${status}`);
+        } catch (err) {
+            toast.error(err.data?.message || 'Failed to mark attendance');
+        }
+    };
 
     return (
         <StaffLayout>
-            <div className="mb-8">
-                <h1 className="text-2xl font-bold text-slate-800">Faculty Dashboard</h1>
-                <p className="text-slate-500 text-sm">Focus on your scheduled activities and student evaluations.</p>
+            <div className="mb-8 flex justify-between items-end">
+                <div>
+                    <h1 className="text-2xl font-bold text-slate-800">Faculty Dashboard</h1>
+                    <p className="text-slate-500 text-sm">Focus on your scheduled activities and student evaluations.</p>
+                </div>
+                
+                {/* Quick Attendance Action */}
+                <div className="bg-white p-3 rounded-xl border border-slate-200 shadow-sm flex items-center gap-4">
+                    <div className="size-10 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                        <Fingerprint size={20} />
+                    </div>
+                    <div>
+                        <p className="text-xs font-bold text-slate-400 uppercase">My Attendance</p>
+                        {todayRecord ? (
+                            <div className="flex items-center gap-2 mt-1">
+                                <Badge variant={todayRecord.status === 'present' ? 'success' : 'destructive'} className="uppercase text-[10px]">
+                                    {todayRecord.status}
+                                </Badge>
+                                <span className="text-xs font-semibold text-slate-500">Marked for Today</span>
+                            </div>
+                        ) : (
+                            <div className="flex items-center gap-2 mt-1">
+                                <Button size="sm" variant="outline" className="h-7 text-xs border-green-200 text-green-700 hover:bg-green-50" onClick={() => handleMarkAttendance('present')} disabled={isMarking}>Present</Button>
+                                <Button size="sm" variant="outline" className="h-7 text-xs border-red-200 text-red-700 hover:bg-red-50" onClick={() => handleMarkAttendance('absent')} disabled={isMarking}>Absent</Button>
+                            </div>
+                        )}
+                    </div>
+                </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -37,10 +73,10 @@ const StaffDashboard = () => {
                     icon={Users}
                 />
                 <StatCard
-                    title="Today's Attendance"
-                    value={attendanceDisplay}
+                    title="My Attendance Rate"
+                    value={statsLoading ? '...' : (stats?.attendanceRate ? `${stats.attendanceRate}%` : '—')}
                     icon={Clock}
-                    color={stats?.attendanceMarkedToday ? 'success' : 'warning'}
+                    color="purple"
                 />
                 <StatCard
                     title="Pending Evaluations"
@@ -51,7 +87,6 @@ const StaffDashboard = () => {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {/* Recent Notices Stream */}
                 <Card className="border-none shadow-sm h-full">
                     <CardHeader className="border-b border-slate-50">
                         <CardTitle className="text-slate-600 text-xs font-bold uppercase tracking-widest flex items-center gap-2">
@@ -60,7 +95,7 @@ const StaffDashboard = () => {
                     </CardHeader>
                     <CardContent className="p-6">
                         <div className="space-y-5">
-                            {recentNotices.length > 0 ? recentNotices.map((n, i) => {
+                            {recentNotices.length > 0 ? recentNotices.map((n) => {
                                 const unread = !n.readBy?.includes(user?._id);
                                 return (
                                     <div key={n._id} className="flex gap-4">
@@ -84,7 +119,6 @@ const StaffDashboard = () => {
                     </CardContent>
                 </Card>
 
-                {/* Assigned Batches Panel */}
                 <Card className="border-none shadow-sm h-full bg-slate-900 overflow-hidden relative">
                     <div className="absolute top-0 right-0 p-8 opacity-10">
                         <Users size={160} className="text-white" />

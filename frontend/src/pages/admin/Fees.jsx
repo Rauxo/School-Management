@@ -12,6 +12,9 @@ import Modal from '@/components/common/Modal';
 import { Input } from '@/components/ui/Input';
 import toast from 'react-hot-toast';
 
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
+
 const Fees = () => {
     const [params, setParams] = useState({ page: 1, limit: 10, search: '' });
     const { data: fees, isLoading } = useGetFeesQuery(params);
@@ -30,20 +33,42 @@ const Fees = () => {
         } catch (err) { toast.error('Failed to approve payment'); }
     };
 
-    const handleDownloadReport = async () => {
+    const handleDownloadReport = () => {
         try {
-            const response = await API.get('/admin/reports/income/download', {
-                responseType: 'blob',
+            const doc = new jsPDF();
+            
+            // Add Title
+            doc.setFontSize(20);
+            doc.setTextColor(40);
+            doc.text('Income Report', 14, 22);
+            
+            doc.setFontSize(11);
+            doc.setTextColor(100);
+            doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 14, 30);
+
+            const tableData = fees?.map(fee => [
+                fee._id,
+                fee.student?.user?.name || 'Unknown',
+                `INR ${fee.amount?.toLocaleString()}`,
+                fee.title,
+                fee.status.toUpperCase(),
+                new Date(fee.dueDate).toLocaleDateString()
+            ]) || [];
+
+            doc.autoTable({
+                startY: 40,
+                head: [['Receipt No', 'Student', 'Amount', 'Title', 'Status', 'Due Date']],
+                body: tableData,
+                theme: 'striped',
+                headStyles: { fillColor: [79, 70, 229] }, // Indigo 600
+                styles: { fontSize: 9 },
             });
-            const url = window.URL.createObjectURL(new Blob([response.data]));
-            const link = document.createElement('a');
-            link.href = url;
-            link.setAttribute('download', 'income_report.csv');
-            document.body.appendChild(link);
-            link.click();
-            link.remove();
+
+            doc.save('income_report.pdf');
+            toast.success('PDF Report generated');
         } catch (error) {
-            toast.error('Failed to download report');
+            console.error(error);
+            toast.error('Failed to generate PDF');
         }
     };
 

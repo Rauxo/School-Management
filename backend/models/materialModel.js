@@ -15,8 +15,8 @@ const materialSchema = mongoose.Schema(
         },
         type: {
             type: String,
-            enum: ['Notes', 'Assignment' , 'syllabus' , 'Other'],
-            default: 'Notes',
+            enum: ['Study', 'practice'],
+            default: 'Study',
         },
         batch: {
             type: mongoose.Schema.Types.ObjectId,

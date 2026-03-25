@@ -15,10 +15,12 @@ import Fees from "./pages/admin/Fees";
 import Batches from "./pages/admin/Batches";
 import Exams from "./pages/admin/Exams";
 import Materials from "./pages/admin/Materials";
+import AdminResults from "./pages/admin/Results";
 import AdminStaffAttendance from "./pages/admin/StaffAttendance";
 import Attendance from "./pages/staff/Attendance";
 import StaffStudents from "./pages/staff/Students";
 import MarksEntry from "./pages/staff/MarksEntry";
+import StaffExams from "./pages/staff/Exams";
 import StudentDashboard from "./pages/student/Dashboard";
 import StudentFees from "./pages/student/Fees";
 import StudentAttendance from "./pages/student/Attendance";
@@ -27,6 +29,8 @@ import StudentCertificates from "./pages/student/Certificates";
 import StudentResults from "./pages/student/Results";
 import StaffDashboard from "./pages/staff/Dashboard";
 import Notices from "./pages/common/Notices";
+import StaffResults from "./pages/staff/Results";
+import StaffMaterials from "./pages/staff/Materials";
 import { ProtectedRoute, RoleRoute } from "./routes/Guards";
 import { Toaster } from "react-hot-toast";
 import { useSelector } from "react-redux";
@@ -65,6 +69,7 @@ const AppRoutes = () => {
               <Route path="/admin/fees" element={<Fees />} />
               <Route path="/admin/notices" element={<Notices />} />
               <Route path="/admin/materials" element={<Materials />} />
+              <Route path="/admin/results" element={<AdminResults />} />
             </Route>
 
             <Route element={<RoleRoute allowedRoles={["staff"]} />}>
@@ -72,6 +77,9 @@ const AppRoutes = () => {
               <Route path="/staff/students" element={<StaffStudents />} />
               <Route path="/staff/attendance" element={<Attendance />} />
               <Route path="/staff/marks" element={<MarksEntry />} />
+              <Route path="/staff/exams" element={<StaffExams />} />
+              <Route path="/staff/results" element={<StaffResults />} />
+              <Route path="/staff/materials" element={<StaffMaterials />} />
               <Route path="/staff/notices" element={<Notices />} />
             </Route>
 

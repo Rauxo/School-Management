@@ -4,6 +4,7 @@ const StaffAttendance = require('../models/staffAttendanceModel');
 const StaffModel = require('../models/staffModel');
 const Exam = require('../models/examModel');
 const Result = require('../models/resultModel');
+const Material = require('../models/materialModel');
 
 // @desc    Get staff dashboard stats (dynamic)
 // @route   GET /api/staff/dashboard
@@ -95,11 +96,7 @@ const markStudentAttendance = async (req, res) => {
         });
 
         if (existing) {
-            // Update the existing record instead of creating a duplicate
-            existing.status = status;
-            existing.markedBy = req.user._id;
-            const updated = await existing.save();
-            return res.json({ ...updated.toObject(), updated: true });
+            return res.status(400).json({ message: 'Attendance already marked for today and cannot be changed.' });
         }
 
         const attendance = await Attendance.create({
@@ -107,6 +104,7 @@ const markStudentAttendance = async (req, res) => {
             batch: batchId,
             status,
             date: attendanceDate,
+            dateString: attendanceDate.toISOString().split('T')[0],
             markedBy: req.user._id
         });
 
@@ -146,8 +144,42 @@ const getTodayAttendance = async (req, res) => {
 const getMyAttendance = async (req, res) => {
     try {
         const { _id } = await StaffModel.findOne({ user: req.user._id });
-        const attendance = await StaffAttendance.find({ staff: _id });
+        const attendance = await StaffAttendance.find({ staff: _id }).sort({ date: -1 });
         res.json(attendance);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// @desc    Mark staff's own attendance
+// @route   POST /api/staff/my-attendance
+// @access  Private/Staff
+const markMyAttendance = async (req, res) => {
+    try {
+        const { status } = req.body;
+        const staff = await StaffModel.findOne({ user: req.user._id });
+        if (!staff) return res.status(404).json({ message: 'Staff profile not found' });
+
+        const d = new Date();
+        d.setHours(0, 0, 0, 0);
+
+        const existing = await StaffAttendance.findOne({
+            staff: staff._id,
+            date: { $gte: d, $lt: new Date(d.getTime() + 24 * 60 * 60 * 1000) }
+        });
+
+        if (existing) {
+            return res.status(400).json({ message: 'Attendance already marked for today' });
+        }
+
+        const attendance = await StaffAttendance.create({
+            staff: staff._id,
+            date: new Date(),
+            dateString: new Date().toISOString().split('T')[0],
+            status
+        });
+
+        res.status(201).json(attendance);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -239,6 +271,92 @@ const getBatchResults = async (req, res) => {
     }
 };
 
+// @desc    Create new exam
+// @route   POST /api/staff/exams
+// @access  Private/Staff
+const createExam = async (req, res) => {
+    try {
+        const { title, description, date, maxMarks, passingMarks, batchId } = req.body;
+        
+        const staffRecord = await StaffModel.findOne({ user: req.user._id });
+        const isAssigned = staffRecord.assignedBatches.some(b => b.toString() === batchId);
+        if (!isAssigned) return res.status(403).json({ message: 'Not assigned to this batch' });
+
+        const exam = await Exam.create({
+            title,
+            description,
+            examDate: date,
+            maxMarks,
+            passingMarks,
+            batch: batchId
+        });
+        res.status(201).json(exam);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// @desc    Get exams for assigned batches
+// @route   GET /api/staff/exams
+// @access  Private/Staff
+const getStaffExams = async (req, res) => {
+    try {
+        const staffRecord = await StaffModel.findOne({ user: req.user._id });
+        const exams = await Exam.find({ batch: { $in: staffRecord.assignedBatches } }).populate('batch', 'name');
+        res.json(exams);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// @desc    Upload Material
+// @route   POST /api/staff/materials
+// @access  Private/Staff
+const uploadMaterial = async (req, res) => {
+    try {
+        const { title, description, type, batchId } = req.body;
+        const fileUrl = req.file ? `/uploads/${req.file.filename}` : null;
+
+        if (!fileUrl) return res.status(400).json({ message: 'File is required' });
+
+        const staffRecord = await StaffModel.findOne({ user: req.user._id });
+        const isAssigned = staffRecord.assignedBatches.some(b => b.toString() === batchId);
+        if (batchId && !isAssigned) return res.status(403).json({ message: 'Not assigned to this batch' });
+
+        const material = await Material.create({
+            title,
+            description,
+            fileUrl,
+            type,
+            batch: batchId || null,
+            uploadedBy: req.user._id
+        });
+
+        res.status(201).json(material);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// @desc    Get materials for staff (all + their uploads)
+// @route   GET /api/staff/materials
+// @access  Private/Staff
+const getStaffMaterials = async (req, res) => {
+    try {
+        const staffRecord = await StaffModel.findOne({ user: req.user._id });
+        const materials = await Material.find({
+            $or: [
+                { batch: { $in: staffRecord.assignedBatches } },
+                { batch: null },
+                { uploadedBy: req.user._id }
+            ]
+        }).populate('uploadedBy', 'name').populate('batch', 'name');
+        res.json(materials);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 module.exports = {
     getStaffDashboardStats,
     getMyBatches,
@@ -248,5 +366,10 @@ module.exports = {
     getBatchStudents,
     enterMarks,
     getStudentProfile,
-    getBatchResults
+    getBatchResults,
+    createExam,
+    getStaffExams,
+    markMyAttendance,
+    uploadMaterial,
+    getStaffMaterials
 };

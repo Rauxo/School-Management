@@ -17,6 +17,10 @@ const attendanceSchema = mongoose.Schema(
             required: true,
             default: Date.now,
         },
+        dateString: {
+            type: String,
+            required: true,
+        },
         status: {
             type: String,
             enum: ['present', 'absent', 'late'],
@@ -31,6 +35,8 @@ const attendanceSchema = mongoose.Schema(
         timestamps: true,
     }
 );
+
+attendanceSchema.index({ student: 1, batch: 1, dateString: 1 }, { unique: true });
 
 const Attendance = mongoose.model('Attendance', attendanceSchema);
 
