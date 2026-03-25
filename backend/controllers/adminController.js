@@ -9,6 +9,7 @@ const Material = require('../models/materialModel');
 const StaffAttendance = require('../models/staffAttendanceModel');
 const Attendance = require('../models/attendanceModel');
 const Result = require('../models/resultModel');
+const Certificate = require('../models/certificateModel');
 
 // @desc    Add new student
 // @route   POST /api/admin/students
@@ -516,6 +517,37 @@ const downloadIncomeReport = async (req, res) => {
     res.status(200).send(csv);
 };
 
+// @desc    Issue Certificate/Report Card
+// @route   POST /api/admin/certificates
+// @access  Private/Admin
+const issueCertificate = async (req, res) => {
+    const { studentId, title, description } = req.body;
+    const fileUrl = req.file ? `/uploads/${req.file.filename}` : null;
+
+    if (!fileUrl) return res.status(400).json({ message: 'Certificate file is required' });
+
+    const certificate = await Certificate.create({
+        student: studentId,
+        title,
+        description,
+        fileUrl,
+        issuer: req.user._id
+    });
+
+    res.status(201).json(certificate);
+};
+
+// @desc    Get All Certificates (Admin)
+// @route   GET /api/admin/certificates
+// @access  Private/Admin
+const getAdminCertificates = async (req, res) => {
+    const certificates = await Certificate.find({}).populate({
+        path: 'student',
+        populate: { path: 'user', select: 'name' }
+    });
+    res.json(certificates);
+};
+
 module.exports = { 
     addStudent, getStudents, updateStudent, deleteStudent,
     addStaff, getStaff, updateStaff, deleteStaff,
@@ -526,5 +558,6 @@ module.exports = {
     getAdminMaterials,
     getIncomeReport,
     getExams, createExam, getAllResults,
-    getStaffAttendanceAdmin, approvePayment, downloadIncomeReport
+    getStaffAttendanceAdmin, approvePayment, downloadIncomeReport,
+    issueCertificate, getAdminCertificates
 };

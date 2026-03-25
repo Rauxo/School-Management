@@ -17,6 +17,7 @@ import Exams from "./pages/admin/Exams";
 import Materials from "./pages/admin/Materials";
 import AdminResults from "./pages/admin/Results";
 import AdminStaffAttendance from "./pages/admin/StaffAttendance";
+import AdminCertificates from './pages/admin/Certificates';
 import Attendance from "./pages/staff/Attendance";
 import StaffStudents from "./pages/staff/Students";
 import MarksEntry from "./pages/staff/MarksEntry";
@@ -69,6 +70,7 @@ const AppRoutes = () => {
               <Route path="/admin/fees" element={<Fees />} />
               <Route path="/admin/notices" element={<Notices />} />
               <Route path="/admin/materials" element={<Materials />} />
+              <Route path="/admin/certificates" element={<AdminCertificates />} />
               <Route path="/admin/results" element={<AdminResults />} />
             </Route>
 

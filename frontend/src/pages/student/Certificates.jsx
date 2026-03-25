@@ -1,55 +1,56 @@
 import React from 'react';
 import StudentLayout from '@/layouts/StudentLayout';
-import { useGetCertificatesQuery } from '@/api/services/certificatesApi';
+import { useGetStudentCertificatesQuery } from '@/api/services/certificatesApi';
 import { Card, CardContent } from '@/components/ui/Card';
-import { Award, Download, ShieldCheck } from 'lucide-react';
+import { Award, Download, Calendar, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
+import { Badge } from '@/components/ui/Badge';
 
 const Certificates = () => {
-    const { data: certs, isLoading } = useGetCertificatesQuery();
+    const { data: certificates, isLoading } = useGetStudentCertificatesQuery();
 
     return (
         <StudentLayout>
             <div className="mb-8">
-                <h1 className="text-2xl font-bold text-slate-800 tracking-tight">Achievements & Certificates</h1>
-                <p className="text-slate-500 text-sm">Download your verified institutional credentials.</p>
+                <h1 className="text-2xl font-bold text-slate-800 tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-amber-600 to-orange-600">
+                    My Certificates & Reports
+                </h1>
+                <p className="text-slate-500 text-sm italic">Your official academic achievements and report cards.</p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {isLoading ? (
-                    [1,2].map(i => <div key={i} className="h-48 bg-slate-100 rounded-2xl animate-pulse" />)
-                ) : certs?.length > 0 ? (
-                    certs.map((c) => (
-                        <Card key={c._id} className="border-none shadow-xl shadow-slate-200/50 bg-gradient-to-br from-white to-slate-50 overflow-hidden group">
-                           <CardContent className="p-8 relative">
-                               <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
-                                   <Award size={120} />
-                               </div>
-                               
-                               <div className="flex items-center gap-2 mb-6 text-primary">
-                                   <ShieldCheck size={20} className="fill-primary/20" />
-                                   <span className="text-[10px] font-bold uppercase tracking-[0.2em]">Verified Credential</span>
-                               </div>
-
-                               <h2 className="text-xl font-extrabold text-slate-900 mb-2 leading-tight uppercase tracking-tight">{c.title}</h2>
-                               <p className="text-sm text-slate-500 mb-8 border-l-2 border-slate-200 pl-4 italic">Awarded on {new Date(c.createdAt).toLocaleDateString()}</p>
-
-                               <div className="flex justify-between items-end">
-                                   <div className="space-y-1">
-                                       <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Digital ID</p>
-                                       <p className="text-xs font-mono text-slate-600">ID-{c._id.slice(-8).toUpperCase()}</p>
-                                   </div>
-                                   <Button className="rounded-xl shadow-lg shadow-primary/20" as="a" href={c.fileUrl} target="_blank">
-                                       <Download size={16} className="mr-2" /> Download PDF
-                                   </Button>
-                               </div>
-                           </CardContent>
+                    [1,2,3].map(i => <div key={i} className="h-32 bg-slate-100 rounded-xl animate-pulse" />)
+                ) : certificates?.length > 0 ? (
+                    certificates.map((c) => (
+                        <Card key={c._id} className="border-none shadow-sm hover:shadow-md transition-shadow group overflow-hidden border-t-4 border-amber-500">
+                            <CardContent className="p-0">
+                                <div className="p-6">
+                                    <div className="flex items-start justify-between mb-4">
+                                        <div className="p-3 bg-amber-50 text-amber-600 rounded-2xl group-hover:bg-amber-600 group-hover:text-white transition-colors duration-300">
+                                            <Award size={24} />
+                                        </div>
+                                        <Badge variant="outline" className="text-[10px] font-bold uppercase">Issued</Badge>
+                                    </div>
+                                    <h3 className="font-bold text-slate-800 text-lg mb-1 leading-tight">{c.title}</h3>
+                                    <p className="text-xs text-slate-500 mb-4 line-clamp-2">{c.description || 'Official academic record issued by the institution.'}</p>
+                                    
+                                    <div className="flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                                        <Calendar size={12} /> {new Date(c.issueDate).toLocaleDateString()}
+                                    </div>
+                                </div>
+                                <div className="p-4 bg-slate-50 border-t border-slate-100 flex justify-end">
+                                    <Button variant="ghost" size="sm" className="gap-2 text-amber-600 font-bold hover:bg-white" as="a" href={c.fileUrl} target="_blank">
+                                        <Download size={14} /> Download PDF
+                                    </Button>
+                                </div>
+                            </CardContent>
                         </Card>
                     ))
                 ) : (
-                    <div className="col-span-full py-20 bg-white rounded-3xl border-2 border-dashed border-slate-100 text-center">
-                        <Award size={40} className="mx-auto text-slate-200 mb-4" />
-                        <h3 className="text-slate-400 font-medium italic">No certificates found yet. Keep up the good work!</h3>
+                    <div className="col-span-full p-20 text-center bg-white rounded-3xl border border-dashed border-slate-200">
+                        <Award size={48} className="mx-auto text-slate-200 mb-4" />
+                        <h3 className="text-slate-400 font-medium italic">You haven't received any certificates yet.</h3>
                     </div>
                 )}
             </div>

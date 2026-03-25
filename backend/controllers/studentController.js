@@ -3,6 +3,7 @@ const Attendance = require('../models/attendanceModel');
 const Result = require('../models/resultModel');
 const Material = require('../models/materialModel');
 const Notice = require('../models/noticeModel');
+const Certificate = require('../models/certificateModel');
 
 // @desc    Get student profile & dashboard data
 // @route   GET /api/student/profile
@@ -98,4 +99,15 @@ const getStudentResults = async (req, res) => {
     res.json(results);
 };
 
-module.exports = { getStudentProfile, getMaterials, getNotices, getStudentAttendance, getStudentFees, getStudentResults };
+// @desc    Get student certificates
+// @route   GET /api/student/certificates
+// @access  Private/Student
+const getStudentCertificates = async (req, res) => {
+    const student = await Student.findOne({ user: req.user._id });
+    if (!student) return res.status(404).json({ message: 'Student not found' });
+
+    const certificates = await Certificate.find({ student: student._id });
+    res.json(certificates);
+};
+
+module.exports = { getStudentProfile, getMaterials, getNotices, getStudentAttendance, getStudentFees, getStudentResults, getStudentCertificates };

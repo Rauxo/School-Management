@@ -6,7 +6,7 @@ import { useGetStudentProfileQuery, useGetBatchResultsQuery } from '@/api/servic
 import { Badge } from '@/components/ui/Badge';
 
 const StudentDetails = ({ studentId, batchId }) => {
-    const { data: profile, isLoading: isProfileLoading } = useGetStudentProfileQuery(studentId, { skip: !studentId });
+    const { data: profile, isLoading: isProfileLoading } = useGetStudentProfileQuery(studentId, { skip: !studentId || studentId === 'undefined' });
     const { data: results, isLoading: isResultsLoading } = useGetBatchResultsQuery(batchId, { skip: !batchId });
 
     if (!studentId) return <div className="p-8 text-center text-slate-400 bg-white rounded-xl border border-slate-100 h-full flex items-center justify-center">Select a student to view their profile</div>;

@@ -14,6 +14,9 @@ import { useGetBatchesQuery } from '@/api/services/batchesApi';
 import Modal from '@/components/common/Modal';
 import { Input } from '@/components/ui/Input';
 import toast from 'react-hot-toast';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
+import { Download } from 'lucide-react';
 
 const Staff = () => {
     const { data: staff, isLoading } = useGetStaffQuery();
@@ -30,6 +33,35 @@ const Staff = () => {
         name: '', email: '', password: '', employeeId: '', designation: '', salary: '', phone: '', address: '', assignedBatches: [] 
     };
     const [formData, setFormData] = useState(initialForm);
+
+    const handleExport = () => {
+        try {
+            const doc = new jsPDF();
+            doc.setFontSize(20);
+            doc.text('Staff Directory', 14, 22);
+            doc.setFontSize(11);
+            doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 14, 30);
+
+            const tableData = (staff || []).map(s => [
+                s.user?.name || 'N/A',
+                s.employeeId || 'N/A',
+                s.designation || 'N/A',
+                s.user?.email || 'N/A',
+                `₹${s.salary?.toLocaleString()}`
+            ]);
+
+            autoTable(doc, {
+                startY: 40,
+                head: [['Name', 'Employee ID', 'Designation', 'Email', 'Salary']],
+                body: tableData,
+                theme: 'grid',
+                headStyles: { fillColor: [107, 33, 168] } // Purple 800
+            });
+
+            doc.save('staff_directory.pdf');
+            toast.success('Staff exported as PDF');
+        } catch (err) { toast.error('Export failed'); }
+    };
 
     const columns = [
         { 
@@ -138,9 +170,14 @@ const Staff = () => {
                     <h1 className="text-2xl font-extrabold text-slate-800 tracking-tight">Staff Directory</h1>
                     <p className="text-slate-500 text-sm">Manage faculty and administrative members.</p>
                 </div>
-                <Button onClick={handleOpenAdd} className="gap-2">
-                    <UserPlus size={18} /> Register Staff
-                </Button>
+                <div className="flex gap-3">
+                    <Button variant="outline" onClick={handleExport} className="gap-2">
+                        <Download size={18} /> Export PDF
+                    </Button>
+                    <Button onClick={handleOpenAdd} className="gap-2">
+                        <UserPlus size={18} /> Register Staff
+                    </Button>
+                </div>
             </div>
 
             <DataTable columns={columns} data={staff || []} isLoading={isLoading} />

@@ -14,11 +14,16 @@ export const studentDataApi = apiSlice.injectEndpoints({
       query: () => '/student/fees',
       providesTags: ['Fee'],
     }),
+    getStudentMaterials: builder.query({
+      query: () => '/student/materials',
+      providesTags: ['Material'],
+    }),
   }),
 });
 
 export const { 
     useGetStudentProfileQuery, 
     useGetStudentAttendanceQuery, 
-    useGetStudentFeesQuery 
+    useGetStudentFeesQuery,
+    useGetStudentMaterialsQuery
 } = studentDataApi;

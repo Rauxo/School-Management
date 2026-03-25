@@ -5,7 +5,8 @@ const {
     getDashboardStats,
     addNotice, getAdminNotices, uploadMaterial, getAdminMaterials, getIncomeReport,
     getExams, createExam,
-    getStaffAttendanceAdmin, approvePayment, downloadIncomeReport ,getAllResults
+    getStaffAttendanceAdmin, approvePayment, downloadIncomeReport ,getAllResults,
+    issueCertificate, getAdminCertificates
 } = require('../controllers/adminController');
 const { createFee, getFees, getPendingDues } = require('../controllers/feeController');
 const { protect, admin } = require('../middleware/authMiddleware');
@@ -61,5 +62,9 @@ router.route('/results').get(getAllResults);
 router.route('/materials')
     .post(upload.single('file'), uploadMaterial)
     .get(getAdminMaterials);
+
+router.route('/certificates')
+    .post(upload.single('file'), issueCertificate)
+    .get(getAdminCertificates);
 
 module.exports = router;

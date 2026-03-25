@@ -14,6 +14,9 @@ import { useGetBatchesQuery } from '@/api/services/batchesApi';
 import Modal from '@/components/common/Modal';
 import { Input } from '@/components/ui/Input';
 import toast from 'react-hot-toast';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
+import { Download } from 'lucide-react';
 
 const Students = () => {
   const [params, setParams] = useState({ page: 1, limit: 10, search: '' });
@@ -33,6 +36,35 @@ const Students = () => {
     batchId: '', phone: '', address: '', parentName: '', parentPhone: '' 
   };
   const [formData, setFormData] = useState(initialForm);
+
+  const handleExport = () => {
+    try {
+      const doc = new jsPDF();
+      doc.setFontSize(20);
+      doc.text('Student List', 14, 22);
+      doc.setFontSize(11);
+      doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 14, 30);
+
+      const tableData = (res || []).map(s => [
+        s.user?.name || 'N/A',
+        s.rollNumber || 'N/A',
+        s.user?.email || 'N/A',
+        s.batch?.name || 'Unassigned',
+        s.phone || 'N/A'
+      ]);
+
+      autoTable(doc, {
+        startY: 40,
+        head: [['Name', 'Roll Number', 'Email', 'Batch', 'Phone']],
+        body: tableData,
+        theme: 'grid',
+        headStyles: { fillColor: [51, 65, 85] }
+      });
+
+      doc.save('students_list.pdf');
+      toast.success('Students exported as PDF');
+    } catch (err) { toast.error('Export failed'); }
+  };
 
   const columns = [
     { 
@@ -134,9 +166,14 @@ const Students = () => {
             <h1 className="text-2xl font-bold text-slate-800 tracking-tight">Student Management</h1>
             <p className="text-slate-500 text-sm italic">Manage your records and batch assignments.</p>
         </div>
-        <Button onClick={handleOpenAdd} className="gap-2 shadow-lg shadow-primary/20">
-          <Plus size={18} /> Add Student
-        </Button>
+        <div className="flex gap-3">
+          <Button variant="outline" onClick={handleExport} className="gap-2">
+            <Download size={18} /> Export PDF
+          </Button>
+          <Button onClick={handleOpenAdd} className="gap-2 shadow-lg shadow-primary/20">
+            <Plus size={18} /> Add Student
+          </Button>
+        </div>
       </div>
 
       <DataTable 

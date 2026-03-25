@@ -7,10 +7,6 @@ const certificateSchema = mongoose.Schema(
             required: true,
             ref: 'Student',
         },
-        exam: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'Exam', // Optional: could be a course completion cert
-        },
         title: {
             type: String,
             required: true,
@@ -23,11 +19,13 @@ const certificateSchema = mongoose.Schema(
             type: String,
             required: true,
         },
-        issuedBy: {
+        description: {
+            type: String,
+        },
+        issuer: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'User',
-            required: true,
-        },
+        }
     },
     {
         timestamps: true,

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
-    LayoutDashboard, Users, UserCheck, BookOpen, 
-    CreditCard, FileText, Bell, LogOut, Menu, X, ChevronRight 
+  LayoutDashboard, Users, UserCheck, BookOpen, Clock, FileEdit, 
+  FileText, Bell, CreditCard, LogOut, Menu, X, ChevronRight, Settings, Award
 } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '@/features/auth/authSlice';
@@ -23,7 +23,9 @@ const AdminLayout = ({ children }) => {
         { label: 'Exams', path: '/admin/exams', icon: FileText },
         { label: 'Results', path: '/admin/results', icon: BookOpen },
         { label: 'Notices', path: '/admin/notices', icon: Bell },
-        { label: 'Materials', path: '/admin/materials', icon: BookOpen },
+        { label: 'Materials', path: '/admin/materials', icon: FileText },
+        { label: 'Certificates', path: '/admin/certificates', icon: Award },
+        { label: 'Settings', path: '/admin/settings', icon: Settings },
     ];
 
     return (
@@ -87,11 +89,11 @@ const AdminLayout = ({ children }) => {
 
                     <div className="flex items-center gap-4">
                         <div className="text-right hidden sm:block">
-                            <p className="text-sm font-semibold text-slate-800 leading-tight">{user?.user?.name}</p>
+                            <p className="text-sm font-semibold text-slate-800 leading-tight">{user?.name}</p>
                             <p className="text-[10px] font-bold text-primary uppercase tracking-wider">{user?.role}</p>
                         </div>
                         <div className="size-10 bg-slate-100 rounded-full border border-slate-200 flex items-center justify-center text-slate-500 font-bold">
-                            {user?.user?.name?.charAt(0)}
+                            {user?.name?.charAt(0)}
                         </div>
                     </div>
                 </header>

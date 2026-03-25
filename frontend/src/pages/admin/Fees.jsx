@@ -13,7 +13,7 @@ import { Input } from '@/components/ui/Input';
 import toast from 'react-hot-toast';
 
 import jsPDF from 'jspdf';
-import 'jspdf-autotable';
+import autoTable from 'jspdf-autotable';
 
 const Fees = () => {
     const [params, setParams] = useState({ page: 1, limit: 10, search: '' });
@@ -49,13 +49,13 @@ const Fees = () => {
             const tableData = fees?.map(fee => [
                 fee._id,
                 fee.student?.user?.name || 'Unknown',
-                `INR ${fee.amount?.toLocaleString()}`,
+                `₹${fee.amount?.toLocaleString()}`,
                 fee.title,
                 fee.status.toUpperCase(),
                 new Date(fee.dueDate).toLocaleDateString()
             ]) || [];
 
-            doc.autoTable({
+            autoTable(doc, {
                 startY: 40,
                 head: [['Receipt No', 'Student', 'Amount', 'Title', 'Status', 'Due Date']],
                 body: tableData,
