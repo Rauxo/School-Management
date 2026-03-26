@@ -357,6 +357,17 @@ const getStaffMaterials = async (req, res) => {
     }
 };
 
+const getPublicStaff = async (req, res) => {
+    try {
+        const staff = await StaffModel.find({ status: 'active' })
+            .populate('user', 'name')
+            .populate('assignedBatches', 'name');
+        res.json(staff);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 module.exports = {
     getStaffDashboardStats,
     getMyBatches,
@@ -371,5 +382,6 @@ module.exports = {
     getStaffExams,
     markMyAttendance,
     uploadMaterial,
-    getStaffMaterials
+    getStaffMaterials,
+    getPublicStaff
 };

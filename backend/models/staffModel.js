@@ -42,6 +42,9 @@ const staffSchema = mongoose.Schema(
                 ref: 'Batch',
             },
         ],
+        image: {
+            type: String,
+        },
     },
     {
         timestamps: true,

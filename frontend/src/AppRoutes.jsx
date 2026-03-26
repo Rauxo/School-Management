@@ -18,6 +18,7 @@ import Materials from "./pages/admin/Materials";
 import AdminResults from "./pages/admin/Results";
 import AdminStaffAttendance from "./pages/admin/StaffAttendance";
 import AdminCertificates from "./pages/admin/Certificates";
+import Banners from "./pages/admin/Banners";
 import Attendance from "./pages/staff/Attendance";
 import StaffStudents from "./pages/staff/Students";
 import MarksEntry from "./pages/staff/MarksEntry";
@@ -82,6 +83,7 @@ const AppRoutes = () => {
                 element={<AdminCertificates />}
               />
               <Route path="/admin/results" element={<AdminResults />} />
+              <Route path="/admin/banners" element={<Banners />} />
             </Route>
 
             <Route element={<RoleRoute allowedRoles={["staff"]} />}>

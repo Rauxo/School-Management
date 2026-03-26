@@ -12,6 +12,7 @@ const studentRoutes = require('./routes/studentRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
 const certificateRoutes = require('./routes/certificateRoutes');
 const noticeRoutes = require('./routes/noticeRoutes');
+const bannerRoutes = require('./routes/bannerRoutes');
 
 // Load env vars
 dotenv.config();
@@ -45,6 +46,7 @@ app.use('/api/student', studentRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/certificates', certificateRoutes);
 app.use('/api/notices', noticeRoutes);
+app.use('/api/banners', bannerRoutes);
 
 app.get('/', (req, res) => {
     res.send('API is running...');

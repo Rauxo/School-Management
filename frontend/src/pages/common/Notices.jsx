@@ -143,7 +143,7 @@ const Notices = () => {
                     <div className="space-y-2">
                         <label className="text-sm font-semibold text-slate-700 block">Target Audience</label>
                         <div className="flex gap-4">
-                            {['student', 'staff', 'admin'].map(role => (
+                            {['student', 'staff', 'admin', 'public'].map(role => (
                                 <label key={role} className="flex items-center gap-2 cursor-pointer">
                                     <input
                                         type="checkbox"

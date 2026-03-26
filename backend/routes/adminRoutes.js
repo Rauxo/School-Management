@@ -6,7 +6,7 @@ const {
     addNotice, getAdminNotices, uploadMaterial, getAdminMaterials, getIncomeReport,
     getExams, createExam,
     getStaffAttendanceAdmin, approvePayment, downloadIncomeReport ,getAllResults,
-    issueCertificate, getAdminCertificates
+    issueCertificate, getAdminCertificates, getPublicBatches
 } = require('../controllers/adminController');
 const { createFee, getFees, getPendingDues } = require('../controllers/feeController');
 const { protect, admin } = require('../middleware/authMiddleware');
@@ -14,6 +14,8 @@ const upload = require('../middleware/uploadMiddleware');
 const express = require("express")
 
 const router = express.Router();
+
+router.get('/batches/public', getPublicBatches);
 
 router.use(protect);
 router.use(admin);
@@ -28,10 +30,10 @@ router.route('/students/:id')
     .delete(deleteStudent);
 
 router.route('/staff')
-    .post(addStaff)
+    .post(upload.single('image'), addStaff)
     .get(getStaff);
 router.route('/staff/:id')
-    .put(updateStaff)
+    .put(upload.single('image'), updateStaff)
     .delete(deleteStaff);
 
 router.route('/batches')

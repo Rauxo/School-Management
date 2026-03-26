@@ -13,7 +13,7 @@ const noticeSchema = mongoose.Schema(
         targetRoles: [
             {
                 type: String,
-                enum: ['admin', 'staff', 'student'],
+                enum: ['admin', 'staff', 'student', 'public'],
             },
         ],
         createdBy: {

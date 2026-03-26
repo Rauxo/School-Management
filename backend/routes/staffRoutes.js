@@ -13,11 +13,14 @@ const {
     getStaffExams,
     markMyAttendance,
     uploadMaterial,
-    getStaffMaterials
+    getStaffMaterials,
+    getPublicStaff
 } = require('../controllers/staffController');
 const { protect, staff } = require('../middleware/authMiddleware');
 
 const router = express.Router();
+
+router.get('/public', getPublicStaff);
 
 router.use(protect);
 router.use(staff);

@@ -14,7 +14,11 @@ export const batchesApi = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ['Batch'],
     }),
+    getPublicBatches: builder.query({
+      query: () => '/admin/batches/public',
+      providesTags: ['Batch'],
+    }),
   }),
 });
 
-export const { useGetBatchesQuery, useCreateBatchMutation } = batchesApi;
+export const { useGetBatchesQuery, useCreateBatchMutation, useGetPublicBatchesQuery } = batchesApi;

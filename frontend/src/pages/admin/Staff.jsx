@@ -30,7 +30,7 @@ const Staff = () => {
     const [currentId, setCurrentId] = useState(null);
 
     const initialForm = { 
-        name: '', email: '', password: '', employeeId: '', designation: '', salary: '', phone: '', address: '', assignedBatches: [] 
+        name: '', email: '', password: '', employeeId: '', designation: '', salary: '', phone: '', address: '', assignedBatches: [], image: null 
     };
     const [formData, setFormData] = useState(initialForm);
 
@@ -68,9 +68,17 @@ const Staff = () => {
             header: 'Staff Member', 
             cell: (row) => (
                 <div className="flex items-center gap-3">
-                    <div className="size-9 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center font-bold">
-                        {row.user?.name?.charAt(0)}
-                    </div>
+                    {row.image ? (
+                        <img 
+                            src={`http://localhost:5000${row.image}`} 
+                            alt={row.user?.name} 
+                            className="size-9 rounded-xl object-cover border border-slate-200"
+                        />
+                    ) : (
+                        <div className="size-9 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center font-bold">
+                            {row.user?.name?.charAt(0)}
+                        </div>
+                    )}
                     <div>
                         <p className="font-bold text-slate-800">{row.user?.name}</p>
                         <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">{row.employeeId}</p>
@@ -128,7 +136,8 @@ const Staff = () => {
             salary: member.salary || '',
             phone: member.phone || '',
             address: member.address || '',
-            assignedBatches: member.assignedBatches ? member.assignedBatches.map(b => b._id) : []
+            assignedBatches: member.assignedBatches ? member.assignedBatches.map(b => b._id) : [],
+            image: null
         });
         setModalOpen(true);
     };
@@ -150,12 +159,23 @@ const Staff = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        const data = new FormData();
+        Object.keys(formData).forEach(key => {
+            if (key === 'assignedBatches') {
+                formData[key].forEach(val => data.append('assignedBatches[]', val));
+            } else if (key === 'image' && formData[key]) {
+                data.append('image', formData[key]);
+            } else if (key !== 'image') {
+                data.append(key, formData[key]);
+            }
+        });
+
         try {
             if (isEditMode) {
-                await updateStaff({ id: currentId, ...formData }).unwrap();
+                await updateStaff({ id: currentId, data }).unwrap();
                 toast.success('Staff details updated successfully');
             } else {
-                await addStaff(formData).unwrap();
+                await addStaff(data).unwrap();
                 toast.success('Staff member registered successfully');
             }
             setModalOpen(false);
@@ -184,6 +204,14 @@ const Staff = () => {
 
             <Modal isOpen={isModalOpen} onClose={() => setModalOpen(false)} title={isEditMode ? "Edit Staff Member" : "Register Staff Member"}>
                 <form onSubmit={handleSubmit} className="space-y-4 pt-2">
+                    <div className="space-y-1">
+                        <label className="text-sm font-semibold text-slate-700">Staff Image</label>
+                        <Input 
+                            type="file" 
+                            accept="image/*" 
+                            onChange={e => setFormData({...formData, image: e.target.files[0]})} 
+                        />
+                    </div>
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-1">
                             <label className="text-sm font-semibold text-slate-700">Full Name</label>

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
   LayoutDashboard, Users, UserCheck, BookOpen, Clock, FileEdit, 
-  FileText, Bell, CreditCard, LogOut, Menu, X, ChevronRight, Settings, Award
+  FileText, Bell, CreditCard, LogOut, Menu, X, ChevronRight, Settings, Award, Image as ImageIcon
 } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '@/features/auth/authSlice';
@@ -25,6 +25,7 @@ const AdminLayout = ({ children }) => {
         { label: 'Notices', path: '/admin/notices', icon: Bell },
         { label: 'Materials', path: '/admin/materials', icon: FileText },
         { label: 'Certificates', path: '/admin/certificates', icon: Award },
+        { label: 'Banners', path: '/admin/banners', icon: ImageIcon },
         { label: 'Settings', path: '/admin/settings', icon: Settings },
     ];
 

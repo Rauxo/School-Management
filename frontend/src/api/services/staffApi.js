@@ -37,6 +37,10 @@ export const staffApi = apiSlice.injectEndpoints({
       query: (batchId) => `/staff/results/${batchId}`,
       providesTags: ['Result'],
     }),
+    getPublicStaff: builder.query({
+      query: () => '/staff/public',
+      providesTags: ['Staff'],
+    }),
   }),
 });
 
@@ -46,5 +50,6 @@ export const {
   useDeleteStaffMutation, 
   useUpdateStaffMutation,
   useGetStudentProfileQuery,
-  useGetBatchResultsQuery
+  useGetBatchResultsQuery,
+  useGetPublicStaffQuery
 } = staffApi;

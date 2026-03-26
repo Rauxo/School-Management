@@ -6,6 +6,10 @@ export const noticesApi = apiSlice.injectEndpoints({
       query: () => '/notices',
       providesTags: ['Notice'],
     }),
+    getPublicNotices: builder.query({
+      query: () => '/notices/public',
+      providesTags: ['Notice'],
+    }),
     createNotice: builder.mutation({
       query: (data) => ({
         url: '/admin/notices',
@@ -25,4 +29,4 @@ export const noticesApi = apiSlice.injectEndpoints({
   }),
 });
 
-export const { useGetNoticesQuery, useCreateNoticeMutation, useMarkNoticeAsReadMutation } = noticesApi;
+export const { useGetNoticesQuery, useGetPublicNoticesQuery, useCreateNoticeMutation, useMarkNoticeAsReadMutation } = noticesApi;

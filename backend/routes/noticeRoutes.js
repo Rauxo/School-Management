@@ -39,4 +39,16 @@ router.put('/:id/read', protect, async (req, res) => {
     }
 });
 
+// @desc    Get public notices
+// @route   GET /api/notices/public
+// @access  Public
+router.get('/public', async (req, res) => {
+    try {
+        const notices = await Notice.find({ targetRoles: 'public' }).populate('createdBy', 'name').sort({ createdAt: -1 });
+        res.json(notices);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
 module.exports = router;

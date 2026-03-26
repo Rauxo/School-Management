@@ -10,6 +10,7 @@ const StaffAttendance = require('../models/staffAttendanceModel');
 const Attendance = require('../models/attendanceModel');
 const Result = require('../models/resultModel');
 const Certificate = require('../models/certificateModel');
+const Banner = require('../models/bannerModel');
 
 // @desc    Add new student
 // @route   POST /api/admin/students
@@ -104,6 +105,7 @@ const deleteStudent = async (req, res) => {
 // @access  Private/Admin
 const addStaff = async (req, res) => {
     const { name, email, password, employeeId, designation, salary, phone, address } = req.body;
+    const image = req.file ? `/uploads/${req.file.filename}` : null;
 
     const userExists = await User.findOne({ email });
     if (userExists) {
@@ -124,7 +126,8 @@ const addStaff = async (req, res) => {
             designation,
             salary,
             phone,
-            address
+            address,
+            image
         });
 
         res.status(201).json(staff);
@@ -154,6 +157,11 @@ const updateStaff = async (req, res) => {
         staff.phone = req.body.phone || staff.phone;
         staff.address = req.body.address || staff.address;
         staff.status = req.body.status || staff.status;
+        
+        if (req.file) {
+            staff.image = `/uploads/${req.file.filename}`;
+        }
+
         // Allow admin to assign/update batches
         if (req.body.assignedBatches !== undefined) {
             staff.assignedBatches = req.body.assignedBatches;
@@ -548,10 +556,99 @@ const getAdminCertificates = async (req, res) => {
     res.json(certificates);
 };
 
+// @desc    Add Banner
+// @route   POST /api/admin/banners
+// @access  Private/Admin
+const addBanner = async (req, res) => {
+    const { title, description } = req.body;
+    const imageUrl = req.file ? `/uploads/${req.file.filename}` : null;
+
+    if (!imageUrl) return res.status(400).json({ message: 'Image is required' });
+
+    const bannerCount = await Banner.countDocuments({ active: true });
+    if (bannerCount >= 5) {
+        return res.status(400).json({ message: 'Maximum 5 active banners allowed' });
+    }
+
+    const banner = await Banner.create({
+        title,
+        description,
+        imageUrl,
+    });
+
+    res.status(201).json(banner);
+};
+
+// @desc    Get All Banners
+// @route   GET /api/admin/banners
+// @access  Private/Admin (and Public)
+const getBanners = async (req, res) => {
+    const banners = await Banner.find({});
+    res.json(banners);
+};
+
+// @desc    Update Banner
+// @route   PUT /api/admin/banners/:id
+// @access  Private/Admin
+const updateBanner = async (req, res) => {
+    const banner = await Banner.findById(req.params.id);
+
+    if (banner) {
+        banner.title = req.body.title || banner.title;
+        banner.description = req.body.description || banner.description;
+        banner.active = req.body.active !== undefined ? req.body.active : banner.active;
+
+        if (req.file) {
+            banner.imageUrl = `/uploads/${req.file.filename}`;
+        }
+
+        const updatedBanner = await banner.save();
+        res.json(updatedBanner);
+    } else {
+        res.status(404).json({ message: 'Banner not found' });
+    }
+};
+
+// @desc    Delete Banner
+// @route   DELETE /api/admin/banners/:id
+// @access  Private/Admin
+const deleteBanner = async (req, res) => {
+    const banner = await Banner.findById(req.params.id);
+
+    if (banner) {
+        const activeCount = await Banner.countDocuments({ active: true });
+        if (banner.active && activeCount <= 2) {
+            return res.status(400).json({ message: 'Minimum 2 active banners required' });
+        }
+        await banner.deleteOne();
+        res.json({ message: 'Banner removed' });
+    } else {
+        res.status(404).json({ message: 'Banner not found' });
+    }
+};
+
+const getPublicBatches = async (req, res) => {
+    try {
+        const batches = await Batch.find({ status: 'active' });
+        res.json(batches);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+const getPublicBanners = async (req, res) => {
+    try {
+        const banners = await Banner.find({ active: true });
+        res.json(banners);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 module.exports = { 
     addStudent, getStudents, updateStudent, deleteStudent,
     addStaff, getStaff, updateStaff, deleteStaff,
-    addBatch, getBatches, updateBatch, deleteBatch,
+    addBatch, getBatches, updateBatch, deleteBatch, getPublicBatches,
     getDashboardStats,
     addNotice,    getAdminNotices,
     uploadMaterial,
@@ -559,5 +656,6 @@ module.exports = {
     getIncomeReport,
     getExams, createExam, getAllResults,
     getStaffAttendanceAdmin, approvePayment, downloadIncomeReport,
-    issueCertificate, getAdminCertificates
+    issueCertificate, getAdminCertificates,
+    addBanner, getBanners, updateBanner, deleteBanner, getPublicBanners
 };
