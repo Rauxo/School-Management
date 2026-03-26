@@ -20,7 +20,7 @@ const MarksEntry = () => {
 
     // Derive the batchId from the selected exam
     const selectedExam = exams?.find(e => e._id === selectedExamId);
-    const batchId = selectedExam?.batch;
+    const batchId = selectedExam?.batch?._id;  // ✅ FIX: extract the actual ID, not the whole object
 
     const { data: students, isFetching: studentsFetching } = useGetBatchStudentsQuery(batchId, {
         skip: !batchId

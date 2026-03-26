@@ -16,6 +16,8 @@ const express = require("express")
 const router = express.Router();
 
 router.get('/batches/public', getPublicBatches);
+router.route('/exams')
+    .get(getExams);
 
 router.use(protect);
 router.use(admin);

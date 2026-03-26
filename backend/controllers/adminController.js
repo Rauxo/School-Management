@@ -187,15 +187,20 @@ const updateStaff = async (req, res) => {
       staff.image = `/uploads/${req.file.filename}`;
     }
 
-    // Allow admin to assign/update batches
-    // if (req.body.assignedBatches !== undefined) {
-    //     staff.assignedBatches = req.body.assignedBatches;
-    // }
     if (req.body.assignedBatches !== undefined) {
-      if (Array.isArray(req.body.assignedBatches)) {
-        staff.assignedBatches = req.body.assignedBatches.filter(id => id !== '');
-      } else {
-        staff.assignedBatches = req.body.assignedBatches ? [req.body.assignedBatches] : [];
+      try {
+        let assignedBatches = JSON.parse(req.body.assignedBatches);
+        // Ensure it's an array and filter out empty strings
+        if (Array.isArray(assignedBatches)) {
+          staff.assignedBatches = assignedBatches.filter(
+            (id) => id && id.trim() !== "",
+          );
+        } else {
+          staff.assignedBatches = [];
+        }
+      } catch (err) {
+        // If parsing fails, treat as empty
+        staff.assignedBatches = [];
       }
     }
 

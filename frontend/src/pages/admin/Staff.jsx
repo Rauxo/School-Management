@@ -219,7 +219,8 @@ const Staff = () => {
     const data = new FormData();
     Object.keys(formData).forEach((key) => {
       if (key === "assignedBatches") {
-        formData[key].forEach((val) => data.append("assignedBatches", val));
+        // Send the entire array as a JSON string
+        data.append("assignedBatches", JSON.stringify(formData[key]));
       } else if (key === "image" && formData[key]) {
         data.append("image", formData[key]);
       } else if (key !== "image") {
@@ -480,55 +481,97 @@ const Staff = () => {
                 </div>
               )}
               <div>
-                <h3 className="text-xl font-bold text-slate-900">{selectedStaff.user?.name}</h3>
-                <p className="text-slate-500 font-medium">{selectedStaff.employeeId}</p>
-                <Badge variant={selectedStaff.status === 'active' ? 'success' : 'secondary'} className="mt-1 uppercase text-[10px]">
-                  {selectedStaff.status || 'Active'}
+                <h3 className="text-xl font-bold text-slate-900">
+                  {selectedStaff.user?.name}
+                </h3>
+                <p className="text-slate-500 font-medium">
+                  {selectedStaff.employeeId}
+                </p>
+                <Badge
+                  variant={
+                    selectedStaff.status === "active" ? "success" : "secondary"
+                  }
+                  className="mt-1 uppercase text-[10px]"
+                >
+                  {selectedStaff.status || "Active"}
                 </Badge>
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-x-8 gap-y-4">
               <div className="space-y-1">
-                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Email Address</p>
-                <p className="text-sm text-slate-700 font-medium">{selectedStaff.user?.email}</p>
+                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                  Email Address
+                </p>
+                <p className="text-sm text-slate-700 font-medium">
+                  {selectedStaff.user?.email}
+                </p>
               </div>
               <div className="space-y-1">
-                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Phone Number</p>
-                <p className="text-sm text-slate-700 font-medium">{selectedStaff.phone || 'N/A'}</p>
+                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                  Phone Number
+                </p>
+                <p className="text-sm text-slate-700 font-medium">
+                  {selectedStaff.phone || "N/A"}
+                </p>
               </div>
               <div className="space-y-1">
-                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Designation</p>
-                <p className="text-sm text-slate-700 font-medium">{selectedStaff.designation}</p>
+                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                  Designation
+                </p>
+                <p className="text-sm text-slate-700 font-medium">
+                  {selectedStaff.designation}
+                </p>
               </div>
               <div className="space-y-1">
-                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Salary</p>
-                <p className="text-sm text-slate-700 font-medium">₹{selectedStaff.salary?.toLocaleString()}</p>
+                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                  Salary
+                </p>
+                <p className="text-sm text-slate-700 font-medium">
+                  ₹{selectedStaff.salary?.toLocaleString()}
+                </p>
               </div>
             </div>
 
             <div className="space-y-1">
-              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Residential Address</p>
-              <p className="text-sm text-slate-700 font-medium">{selectedStaff.address || 'N/A'}</p>
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                Residential Address
+              </p>
+              <p className="text-sm text-slate-700 font-medium">
+                {selectedStaff.address || "N/A"}
+              </p>
             </div>
 
             <div className="border-t pt-6">
-              <h4 className="text-xs font-bold text-slate-900 uppercase tracking-widest mb-4">Assigned Batches</h4>
+              <h4 className="text-xs font-bold text-slate-900 uppercase tracking-widest mb-4">
+                Assigned Batches
+              </h4>
               <div className="flex flex-wrap gap-2">
                 {selectedStaff.assignedBatches?.length > 0 ? (
-                  selectedStaff.assignedBatches.map(b => (
-                    <Badge key={b._id} variant="secondary" className="bg-blue-50 text-blue-600 border-blue-100 px-3">
+                  selectedStaff.assignedBatches.map((b) => (
+                    <Badge
+                      key={b._id}
+                      variant="secondary"
+                      className="bg-blue-50 text-blue-600 border-blue-100 px-3"
+                    >
                       {b.name}
                     </Badge>
                   ))
                 ) : (
-                  <p className="text-sm text-slate-400 italic">No batches assigned yet.</p>
+                  <p className="text-sm text-slate-400 italic">
+                    No batches assigned yet.
+                  </p>
                 )}
               </div>
             </div>
 
             <div className="flex justify-end pt-4">
-              <Button variant="outline" onClick={() => setDetailModalOpen(false)}>Close</Button>
+              <Button
+                variant="outline"
+                onClick={() => setDetailModalOpen(false)}
+              >
+                Close
+              </Button>
             </div>
           </div>
         )}
