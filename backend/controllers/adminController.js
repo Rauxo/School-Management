@@ -62,7 +62,7 @@ const addStudent = async (req, res) => {
 // @access  Private/Admin
 const getStudents = async (req, res) => {
   const students = await Student.find({})
-    .populate("user", "name email")
+    .populate("user", "-password")
     .populate("batch", "name");
   res.json(students);
 };
@@ -75,7 +75,9 @@ const updateStudent = async (req, res) => {
 
   if (student) {
     student.rollNumber = req.body.rollNumber || student.rollNumber;
-    student.batch = req.body.batchId || student.batch;
+    if (req.body.batchId !== undefined) {
+      student.batch = req.body.batchId || null;
+    }
     student.phone = req.body.phone || student.phone;
     student.address = req.body.address || student.address;
     student.parentName = req.body.parentName || student.parentName;
@@ -162,7 +164,7 @@ const addStaff = async (req, res) => {
 // @access  Private/Admin
 const getStaff = async (req, res) => {
   const staff = await Staff.find({})
-    .populate("user", "name email")
+    .populate("user", "-password")
     .populate("assignedBatches", "name");
   res.json(staff);
 };
@@ -191,9 +193,9 @@ const updateStaff = async (req, res) => {
     // }
     if (req.body.assignedBatches !== undefined) {
       if (Array.isArray(req.body.assignedBatches)) {
-        staff.assignedBatches = req.body.assignedBatches;
+        staff.assignedBatches = req.body.assignedBatches.filter(id => id !== '');
       } else {
-        staff.assignedBatches = [req.body.assignedBatches];
+        staff.assignedBatches = req.body.assignedBatches ? [req.body.assignedBatches] : [];
       }
     }
 

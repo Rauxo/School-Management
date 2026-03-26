@@ -241,7 +241,7 @@ const getStudentProfile = async (req, res) => {
         if (!student) return res.status(404).json({ message: 'Student not found' });
 
         const staffRecord = await StaffModel.findOne({ user: req.user._id });
-        const isAssigned = staffRecord.assignedBatches.some(b => b.toString() === student.batch._id.toString());
+        const isAssigned = student.batch && staffRecord.assignedBatches.some(b => b.toString() === student.batch._id.toString());
         if (!isAssigned) return res.status(403).json({ message: 'You are not assigned to this student\'s batch' });
 
         res.json(student);

@@ -3,7 +3,7 @@ import AdminLayout from "@/layouts/AdminLayout";
 import DataTable from "@/components/common/DataTable";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
-import { Plus, Trash2, Edit2, UserPlus } from "lucide-react";
+import { Plus, Trash2, Edit2, UserPlus, Eye } from "lucide-react";
 import {
   useGetStaffQuery,
   useAddStaffMutation,
@@ -26,8 +26,10 @@ const Staff = () => {
   const [deleteStaff] = useDeleteStaffMutation();
 
   const [isModalOpen, setModalOpen] = useState(false);
+  const [isDetailModalOpen, setDetailModalOpen] = useState(false);
   const [isEditMode, setEditMode] = useState(false);
   const [currentId, setCurrentId] = useState(null);
+  const [selectedStaff, setSelectedStaff] = useState(null);
 
   const initialForm = {
     name: "",
@@ -142,7 +144,17 @@ const Staff = () => {
             variant="ghost"
             size="sm"
             className="size-8 p-0 text-slate-400 hover:text-primary"
+            onClick={() => handleViewDetails(row)}
+            title="View Details"
+          >
+            <Eye size={14} />
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="size-8 p-0 text-slate-400 hover:text-primary"
             onClick={() => handleEditClick(row)}
+            title="Edit"
           >
             <Edit2 size={14} />
           </Button>
@@ -151,6 +163,7 @@ const Staff = () => {
             size="sm"
             className="size-8 p-0 text-red-400 hover:text-red-600"
             onClick={() => handleDelete(row._id)}
+            title="Delete"
           >
             <Trash2 size={14} />
           </Button>
@@ -158,6 +171,11 @@ const Staff = () => {
       ),
     },
   ];
+
+  const handleViewDetails = (member) => {
+    setSelectedStaff(member);
+    setDetailModalOpen(true);
+  };
 
   const handleEditClick = (member) => {
     setEditMode(true);
@@ -441,6 +459,79 @@ const Staff = () => {
             </Button>
           </div>
         </form>
+      </Modal>
+      <Modal
+        isOpen={isDetailModalOpen}
+        onClose={() => setDetailModalOpen(false)}
+        title="Staff Member Details"
+      >
+        {selectedStaff && (
+          <div className="space-y-6 py-2">
+            <div className="flex items-center gap-4 border-b pb-6">
+              {selectedStaff.image ? (
+                <img
+                  src={`http://localhost:5000${selectedStaff.image}`}
+                  alt={selectedStaff.user?.name}
+                  className="size-16 rounded-2xl object-cover border-2 border-slate-100 shadow-sm"
+                />
+              ) : (
+                <div className="size-16 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center text-2xl font-bold uppercase">
+                  {selectedStaff.user?.name?.charAt(0)}
+                </div>
+              )}
+              <div>
+                <h3 className="text-xl font-bold text-slate-900">{selectedStaff.user?.name}</h3>
+                <p className="text-slate-500 font-medium">{selectedStaff.employeeId}</p>
+                <Badge variant={selectedStaff.status === 'active' ? 'success' : 'secondary'} className="mt-1 uppercase text-[10px]">
+                  {selectedStaff.status || 'Active'}
+                </Badge>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-x-8 gap-y-4">
+              <div className="space-y-1">
+                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Email Address</p>
+                <p className="text-sm text-slate-700 font-medium">{selectedStaff.user?.email}</p>
+              </div>
+              <div className="space-y-1">
+                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Phone Number</p>
+                <p className="text-sm text-slate-700 font-medium">{selectedStaff.phone || 'N/A'}</p>
+              </div>
+              <div className="space-y-1">
+                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Designation</p>
+                <p className="text-sm text-slate-700 font-medium">{selectedStaff.designation}</p>
+              </div>
+              <div className="space-y-1">
+                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Salary</p>
+                <p className="text-sm text-slate-700 font-medium">₹{selectedStaff.salary?.toLocaleString()}</p>
+              </div>
+            </div>
+
+            <div className="space-y-1">
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Residential Address</p>
+              <p className="text-sm text-slate-700 font-medium">{selectedStaff.address || 'N/A'}</p>
+            </div>
+
+            <div className="border-t pt-6">
+              <h4 className="text-xs font-bold text-slate-900 uppercase tracking-widest mb-4">Assigned Batches</h4>
+              <div className="flex flex-wrap gap-2">
+                {selectedStaff.assignedBatches?.length > 0 ? (
+                  selectedStaff.assignedBatches.map(b => (
+                    <Badge key={b._id} variant="secondary" className="bg-blue-50 text-blue-600 border-blue-100 px-3">
+                      {b.name}
+                    </Badge>
+                  ))
+                ) : (
+                  <p className="text-sm text-slate-400 italic">No batches assigned yet.</p>
+                )}
+              </div>
+            </div>
+
+            <div className="flex justify-end pt-4">
+              <Button variant="outline" onClick={() => setDetailModalOpen(false)}>Close</Button>
+            </div>
+          </div>
+        )}
       </Modal>
     </AdminLayout>
   );

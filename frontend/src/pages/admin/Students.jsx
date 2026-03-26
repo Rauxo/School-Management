@@ -3,7 +3,7 @@ import AdminLayout from '@/layouts/AdminLayout';
 import DataTable from '@/components/common/DataTable';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
-import { Plus, Trash2, Edit2 } from 'lucide-react';
+import { Plus, Trash2, Edit2, Eye } from 'lucide-react';
 import { 
   useGetStudentsQuery, 
   useDeleteStudentMutation, 
@@ -28,8 +28,10 @@ const Students = () => {
   const [deleteStudent] = useDeleteStudentMutation();
 
   const [isModalOpen, setModalOpen] = useState(false);
+  const [isDetailModalOpen, setDetailModalOpen] = useState(false);
   const [isEditMode, setEditMode] = useState(false);
   const [currentId, setCurrentId] = useState(null);
+  const [selectedStudent, setSelectedStudent] = useState(null);
 
   const initialForm = { 
     name: '', email: '', password: '', rollNumber: '', 
@@ -95,7 +97,17 @@ const Students = () => {
             variant="ghost" 
             size="sm" 
             className="size-8 p-0 text-slate-400 hover:text-primary"
+            onClick={() => handleViewDetails(row)}
+            title="View Details"
+          >
+            <Eye size={14} />
+          </Button>
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="size-8 p-0 text-slate-400 hover:text-primary"
             onClick={() => handleEditClick(row)}
+            title="Edit"
           >
             <Edit2 size={14} />
           </Button>
@@ -104,6 +116,7 @@ const Students = () => {
             size="sm" 
             className="size-8 p-0 text-slate-400 hover:text-red-500"
             onClick={() => handleDelete(row._id)}
+            title="Delete"
           >
             <Trash2 size={14} />
           </Button>
@@ -111,6 +124,11 @@ const Students = () => {
       )
     },
   ];
+
+  const handleViewDetails = (student) => {
+    setSelectedStudent(student);
+    setDetailModalOpen(true);
+  };
 
   const handleEditClick = (student) => {
     setEditMode(true);
@@ -255,6 +273,74 @@ const Students = () => {
                 </Button>
             </div>
         </form>
+      </Modal>
+      <Modal 
+        isOpen={isDetailModalOpen} 
+        onClose={() => setDetailModalOpen(false)} 
+        title="Student Details"
+      >
+        {selectedStudent && (
+          <div className="space-y-6 py-2">
+            <div className="flex items-center gap-4 border-b pb-6">
+              <div className="size-16 rounded-full bg-primary/10 text-primary flex items-center justify-center text-2xl font-bold uppercase">
+                {selectedStudent.user?.name?.charAt(0)}
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-slate-900">{selectedStudent.user?.name}</h3>
+                <p className="text-slate-500 font-medium">{selectedStudent.rollNumber}</p>
+                <Badge variant={selectedStudent.status === 'active' ? 'success' : 'secondary'} className="mt-1 uppercase text-[10px]">
+                  {selectedStudent.status}
+                </Badge>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-x-8 gap-y-4">
+              <div className="space-y-1">
+                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Email Address</p>
+                <p className="text-sm text-slate-700 font-medium">{selectedStudent.user?.email}</p>
+              </div>
+              <div className="space-y-1">
+                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Phone Number</p>
+                <p className="text-sm text-slate-700 font-medium">{selectedStudent.phone || 'N/A'}</p>
+              </div>
+              <div className="space-y-1">
+                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Current Batch</p>
+                <p className="text-sm text-slate-700 font-medium">
+                  {selectedStudent.batch?.name || 'Unassigned'}
+                </p>
+              </div>
+              <div className="space-y-1">
+                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Admission Date</p>
+                <p className="text-sm text-slate-700 font-medium">
+                  {selectedStudent.admissionDate ? new Date(selectedStudent.admissionDate).toLocaleDateString() : 'N/A'}
+                </p>
+              </div>
+            </div>
+
+            <div className="space-y-1">
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Residential Address</p>
+              <p className="text-sm text-slate-700 font-medium">{selectedStudent.address || 'N/A'}</p>
+            </div>
+
+            <div className="border-t pt-6">
+              <h4 className="text-xs font-bold text-slate-900 uppercase tracking-widest mb-4">Parent / Guardian Information</h4>
+              <div className="grid grid-cols-2 gap-x-8 gap-y-4">
+                <div className="space-y-1">
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Guardian Name</p>
+                  <p className="text-sm text-slate-700 font-medium">{selectedStudent.parentName || 'N/A'}</p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Guardian Phone</p>
+                  <p className="text-sm text-slate-700 font-medium">{selectedStudent.parentPhone || 'N/A'}</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex justify-end pt-4">
+              <Button variant="outline" onClick={() => setDetailModalOpen(false)}>Close</Button>
+            </div>
+          </div>
+        )}
       </Modal>
     </AdminLayout>
   );
