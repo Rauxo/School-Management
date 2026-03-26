@@ -69,15 +69,13 @@ function Navbar() {
 
       {/* MAIN NAVBAR */}
       <div
-        className={`bg-blue-800 text-white shadow-md transition-all duration-500 ease-in-out transform ${
-          hideTop
-            ? "fixed top-0 left-0 w-full translate-y-0 shadow-lg"
-            : "relative translate-y-0"
+        className={`bg-blue-800 text-white shadow-md fixed top-0 left-0 w-full z-40 transform transition-all duration-500 ease-in-out ${
+          hideTop ? "translate-y-0 shadow-lg" : "translate-y-[40px]" // top bar height ke equal
         }`}
       >
         <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-3">
           {/* LOGO */}
-          <Link to="/" className="text-xl font-bold tracking-wide">
+          <Link to="/" className="text-2xl font-bold tracking-wide">
             🎓 MyInstitute
           </Link>
 
