@@ -30,8 +30,8 @@ const StaffLayout = ({ children }) => {
             )}>
                 <div className="h-full flex flex-col">
                     <div className="h-16 flex items-center px-6 border-b border-slate-800">
-                        <div className="bg-primary size-8 rounded-lg flex items-center justify-center text-white font-bold shrink-0">I</div>
-                        {isSidebarOpen && <span className="ml-3 font-bold text-white text-lg tracking-tight">InstiManage</span>}
+                        <div className="bg-primary size-8 rounded-lg flex items-center justify-center text-white font-bold shrink-0">M</div>
+                        {isSidebarOpen && <span className="ml-3 font-bold text-white text-lg tracking-tight">MyInstitute</span>}
                     </div>
 
                     <nav className="flex-1 p-4 space-y-1">

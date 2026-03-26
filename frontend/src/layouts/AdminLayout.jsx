@@ -45,10 +45,10 @@ const AdminLayout = ({ children }) => {
           {/* Logo */}
           <div className="h-16 flex items-center px-4 border-b">
             <div className="bg-primary size-8 rounded-lg flex items-center justify-center text-white font-bold">
-              I
+              M
             </div>
             {isSidebarOpen && (
-              <span className="ml-3 font-bold text-lg">InstiManage</span>
+              <span className="ml-3 font-bold text-lg">MyInstitute</span>
             )}
           </div>
 

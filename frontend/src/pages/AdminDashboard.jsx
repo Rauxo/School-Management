@@ -1,7 +1,7 @@
 import React from 'react';
 import AdminLayout from '@/layouts/AdminLayout';
 import StatCard from '@/components/common/StatCard';
-import { Users, UserCheck, CreditCard, DollarSign, TrendingUp } from 'lucide-react';
+import { Users, UserCheck, CreditCard, TrendingUp  , IndianRupee} from 'lucide-react';
 import { 
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   BarChart, Bar
@@ -39,7 +39,7 @@ const AdminDashboard = () => {
         <StatCard 
           title="Fees Collected" 
           value={isLoading ? "..." : `₹${stats?.totalFeesCollected?.toLocaleString() || 0}`} 
-          icon={DollarSign} 
+          icon={IndianRupee} 
           color="success"
           trend="up" trendValue={8}
         />
