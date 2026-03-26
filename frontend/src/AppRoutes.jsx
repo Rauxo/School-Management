@@ -36,6 +36,9 @@ import { ProtectedRoute, RoleRoute } from "./routes/Guards";
 import { Toaster } from "react-hot-toast";
 import { useSelector } from "react-redux";
 import HomePage from "./pages/HomePage";
+import About from "./pages/About";
+import OurStaff from "./pages/OurStaff";
+import OurBatches from "./pages/OurBatches";
 
 const AppRoutes = () => {
   const { user, isLoading } = useSelector((state) => state.auth);
@@ -129,6 +132,9 @@ const AppRoutes = () => {
             path="/"
             element={isLoading ? <div>Loading...</div> : <HomePage />}
           />
+          <Route path="/about" element={<About />} />
+          <Route path="/staff" element={<OurStaff />} />
+          <Route path="/batches" element={<OurBatches />} />
           {/* <Route path="/" element={<HomeRedirect />} /> */}
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>

@@ -67,6 +67,10 @@ function Navbar() {
           {/* NAV LINKS */}
           <div className="hidden md:flex items-center gap-8 text-sm font-medium">
 
+            <Link to="/" className="relative group">
+              Home
+              <span className="absolute left-0 -bottom-1 w-0 h-[2px] bg-white transition-all group-hover:w-full"></span>
+            </Link>
             <Link to="/about" className="relative group">
               About Us
               <span className="absolute left-0 -bottom-1 w-0 h-[2px] bg-white transition-all group-hover:w-full"></span>
