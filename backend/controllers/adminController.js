@@ -629,7 +629,7 @@ const deleteBanner = async (req, res) => {
 
 const getPublicBatches = async (req, res) => {
     try {
-        const batches = await Batch.find({ status: 'active' });
+        const batches = await Batch.find({});
         res.json(batches);
     } catch (error) {
         res.status(500).json({ message: error.message });

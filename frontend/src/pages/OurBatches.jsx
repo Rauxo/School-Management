@@ -7,19 +7,26 @@ function OurBatches() {
 
   return (
     <PageLayout>
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-100 px-6 pt-32 pb-16">
+      <div className="min-h-screen bg-gray-100 px-6 pt-32 pb-16">
         <div className="max-w-7xl mx-auto">
           {/* HEADING */}
-          <div className="mb-12">
-            <h1 className="text-4xl font-bold text-slate-800 mb-2">🎓 Our Training Batches</h1>
-            <p className="text-slate-500">Explore our wide range of professional and academic courses.</p>
+          <div className="mb-10">
+            <h1 className="text-3xl font-bold text-gray-800 mb-2">
+              🎓 Our Training Batches
+            </h1>
+            <p className="text-gray-500 text-sm">
+              Explore our available courses and enroll today.
+            </p>
           </div>
 
-          {/* GRID */}
+          {/* LOADING */}
           {isLoading ? (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {[1, 2, 3].map(i => (
-                <div key={i} className="bg-white h-48 rounded-2xl animate-pulse shadow-sm" />
+              {[1, 2, 3].map((i) => (
+                <div
+                  key={i}
+                  className="bg-white h-40 border border-gray-300 rounded-md animate-pulse"
+                />
               ))}
             </div>
           ) : (
@@ -27,32 +34,35 @@ function OurBatches() {
               {batches?.map((item) => (
                 <div
                   key={item._id}
-                  className="bg-white shadow-sm p-8 rounded-2xl border border-slate-100 hover:shadow-md transition-all hover:bg-slate-50 group"
+                  className="bg-white border border-gray-300 rounded-md p-5 hover:shadow-sm transition"
                 >
-                  <div className="size-12 bg-primary/10 rounded-xl flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors mb-6 font-bold text-xl">
-                    {item.name.charAt(0)}
-                  </div>
                   {/* TITLE */}
-                  <h2 className="text-xl font-bold text-slate-800 mb-3 group-hover:text-primary transition-colors">
+                  <h2 className="text-lg font-semibold text-gray-800 mb-2">
                     {item.name}
                   </h2>
 
                   {/* DESCRIPTION */}
-                  <p className="text-slate-600 text-sm leading-relaxed mb-4">
+                  <p className="text-gray-600 text-sm mb-4">
                     {item.description}
                   </p>
 
-                  <div className="pt-4 border-t border-slate-100 mt-auto">
-                     <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest bg-slate-100 px-2 py-1 rounded">Active Enrollment</span>
+                  {/* FOOTER */}
+                  <div className="border-t pt-2 mt-2">
+                    <span className="text-xs text-green-600 font-medium">
+                      ● Active Enrollment
+                    </span>
                   </div>
                 </div>
               ))}
             </div>
           )}
 
+          {/* EMPTY STATE */}
           {!isLoading && (!batches || batches.length === 0) && (
-            <div className="text-center py-20 bg-white/50 rounded-3xl border-2 border-dashed border-slate-200">
-               <p className="text-slate-400 italic font-medium">No batches are currently available for display.</p>
+            <div className="text-center py-16 bg-white border border-gray-300 rounded-md">
+              <p className="text-gray-500 text-sm">
+                No batches are currently available.
+              </p>
             </div>
           )}
         </div>
