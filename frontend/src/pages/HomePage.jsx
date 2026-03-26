@@ -39,12 +39,6 @@ function HomePage() {
                     alt={banner.title}
                     className="w-full h-full object-cover"
                   />
-                  {(banner.title || banner.description) && (
-                    <div className="absolute bottom-0 left-0 right-0 bg-black/40 backdrop-blur-md p-6 text-white">
-                      <h3 className="text-2xl font-bold mb-1">{banner.title}</h3>
-                      <p className="text-sm opacity-90">{banner.description}</p>
-                    </div>
-                  )}
                 </div>
               ))
             ) : (
@@ -74,7 +68,7 @@ function HomePage() {
                       key={i}
                       className="flex items-start gap-3 bg-slate-50/50 p-3 rounded-lg border border-slate-100 hover:border-primary/20 hover:bg-white transition-all"
                     >
-                      <span className="text-primary mt-1">➤</span>
+                      <span className="text-red-500 mt-1">➤</span>
                       <div>
                         <p className="font-bold text-slate-800 text-sm mb-1">{notice.title}</p>
                         <p className="text-xs text-slate-600 line-clamp-2">{notice.content}</p>
