@@ -1,30 +1,22 @@
 import React from "react";
+import img1 from "./1.jpeg"
+import img2 from "./2.jpeg"
+import img3 from "./3.jpeg"
+import img4 from "./4.jpeg"
 
 function Activities() {
   const activities = [
     {
-      name: "Football",
-      img: "https://5.imimg.com/data5/SELLER/Default/2021/8/BE/XM/KA/9058559/sports-football.jpg",
+      img: img1,
     },
     {
-      name: "Cricket",
-      img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQwsiTELzQ257ZCyCt8K5v8wQnZxz-l5Bbopg&s",
+      img: img2,
     },
     {
-      name: "Basketball",
-      img: "https://images.unsplash.com/photo-1519861531473-9200262188bf",
+      img:img3,
     },
     {
-      name: "Badminton",
-      img: "https://images.unsplash.com/photo-1587280501635-68a0e82cd5ff",
-    },
-    {
-      name: "Volleyball",
-      img: "https://images.unsplash.com/photo-1593341646782-e0b495cff86d",
-    },
-    {
-      name: "Athletics",
-      img: "https://images.unsplash.com/photo-1508609349937-5ec4ae374ebf",
+      img: img4,
     },
   ];
 
@@ -35,7 +27,7 @@ function Activities() {
         {/* HEADING */}
         <div className="mb-10">
           <h2 className="text-3xl font-bold text-gray-800">
-            🏆 Activities & Sports
+             Gallery
           </h2>
           <div className="w-16 h-1 bg-blue-600 mt-2"></div>
         </div>

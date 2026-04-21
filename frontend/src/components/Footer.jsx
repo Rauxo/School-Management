@@ -1,4 +1,5 @@
 import React from "react";
+import logo from "./logo.jpeg"
 
 function Footer() {
   return (
@@ -15,69 +16,66 @@ function Footer() {
 
           {/* IMAGE */}
           <img
-            src="https://images.unsplash.com/photo-1523240795612-9a054b0db644"
-            alt="Institute"
-            className="w-full h-32 object-cover"
+            src={logo}
+            alt="Guru Global Abacus"
+            className=" h-32 object-contain bg-white "
           />
 
           <p className="text-sm leading-relaxed">
-            Circuit House Road, Golaghat, Assam, India. <br />
-            Pin - 785621
+            Gaurisagar Tiniali (Near Overbridge), <br />
+            Assam, India
           </p>
 
           <p className="text-sm">
-            📞 03774-451224 (Principal), 284482 (Office) <br />
-            📠 285607 (Fax)
+            📞 7002809836 <br />
+            📞 7635869905
           </p>
 
-          <p className="text-sm">📧 principal@drcollege.ac.in</p>
+          <p className="text-sm">
+             Guru Global Education
+          </p>
 
-          {/* SOCIAL */}
           <div>
             <h3 className="mt-3 font-medium">Follow Us</h3>
             <div className="flex gap-3 mt-2">
               <span className="hover:text-gray-300 cursor-pointer">Facebook</span>
-              <span className="hover:text-gray-300 cursor-pointer">LinkedIn</span>
+              <span className="hover:text-gray-300 cursor-pointer">Instagram</span>
             </div>
           </div>
 
         </div>
 
-        {/* MIDDLE - IMPORTANT LINKS */}
         <div className="space-y-4">
 
           <h2 className="text-xl font-semibold border-b border-white/30 pb-2">
-            Important Links
+            Our Courses
           </h2>
 
           <ul className="space-y-2 text-sm">
-            <li className="hover:text-gray-300 cursor-pointer">RTI</li>
-            <li className="hover:text-gray-300 cursor-pointer">Download</li>
-            <li className="hover:text-gray-300 cursor-pointer">Photo Gallery</li>
-            <li className="hover:text-gray-300 cursor-pointer">Our Glorious Past Videos</li>
-            <li className="hover:text-gray-300 cursor-pointer">
-              National Council for Teacher Education
-            </li>
+            <li>Abacus Classes</li>
+            <li>Vedic Maths</li>
+            <li>Phonics & Spoken English</li>
+            <li>Brain Gym</li>
+            <li>Speed Writing</li>
+            <li>Personality Development</li>
+            <li>Story Telling</li>
           </ul>
 
         </div>
 
-        {/* RIGHT - QUICK LINKS */}
+        {/* RIGHT - BENEFITS */}
         <div className="space-y-4">
 
           <h2 className="text-xl font-semibold border-b border-white/30 pb-2">
-            Quick Links
+            Benefits
           </h2>
 
           <ul className="space-y-2 text-sm">
-            <li className="hover:text-gray-300 cursor-pointer">Dibrugarh University</li>
-            <li className="hover:text-gray-300 cursor-pointer">DHE</li>
-            <li className="hover:text-gray-300 cursor-pointer">MMTTC</li>
-            <li className="hover:text-gray-300 cursor-pointer">NAAC</li>
-            <li className="hover:text-gray-300 cursor-pointer">UGC</li>
-            <li className="hover:text-gray-300 cursor-pointer">KKHSOU</li>
-            <li className="hover:text-gray-300 cursor-pointer">IGNOU</li>
-            <li className="hover:text-gray-300 cursor-pointer">Govt. of Assam</li>
+            <li>✔ Improves Math Skills</li>
+            <li>✔ Improves Concentration</li>
+            <li>✔ Improves Memory</li>
+            <li>✔ Boosts Confidence</li>
+            <li>✔ Enhances Brain Development</li>
           </ul>
 
         </div>
@@ -87,7 +85,7 @@ function Footer() {
       {/* BOTTOM BAR */}
       <div className="border-t border-white/30 mt-10 pt-4 flex flex-col md:flex-row justify-between items-center text-sm text-gray-300">
 
-        <p>© {new Date().getFullYear()} MyInstitute. All rights reserved.</p>
+        <p>© {new Date().getFullYear()} Guru Global Abacus. All rights reserved.</p>
 
         <div className="flex gap-4 mt-2 md:mt-0">
           <span className="hover:text-white cursor-pointer">Privacy Policy</span>

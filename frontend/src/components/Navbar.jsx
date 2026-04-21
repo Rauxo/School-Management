@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import logo from "./logo.jpeg";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 
 function Navbar() {
@@ -75,8 +76,14 @@ function Navbar() {
       >
         <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-3">
           {/* LOGO */}
-          <Link to="/" className="text-2xl font-bold tracking-wide">
-            🎓 MyInstitute
+          <Link to="/" className="flex items-center gap-2">
+            <img
+              src={logo}
+              alt="MyInstitute Logo"
+              className="h-10 w-auto object-contain"
+            />
+            {/* <span className="text-xl font-bold tracking-wide">MyInstitute</span> */}
+            <span className="text-xl font-bold tracking-wide">GURU GLOBAL EDUCATION</span>
           </Link>
 
           {/* NAV LINKS */}

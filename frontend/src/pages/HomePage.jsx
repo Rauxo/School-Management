@@ -54,7 +54,6 @@ function HomePage() {
             )}
           </div>
 
-          {/* RIGHT - NOTICE (30%) */}
           <div className="w-full md:w-[30%] bg-white shadow-lg p-6 flex flex-col">
             <h2 className="text-2xl font-bold text-gray-800 mb-4 border-b pb-2 flex items-center gap-2">
               📢 <span className="tracking-tight">Notice Board</span>
