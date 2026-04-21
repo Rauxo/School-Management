@@ -36,7 +36,7 @@ const Login = () => {
                 <div className="bg-white text-blue-800 p-3 rounded-xl">
                   <GraduationCap size={28} />
                 </div>
-                <h2 className="text-2xl font-bold">MyInstitute</h2>
+                <h2 className="text-2xl font-bold">GURU GLOBAL EDUCATION</h2>
               </div>
 
               <h1 className="text-4xl font-bold leading-tight">

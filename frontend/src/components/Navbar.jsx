@@ -45,7 +45,7 @@ function Navbar() {
           {/* LEFT */}
           <div className="flex gap-4 items-center">
             <span>🕿 +91 1234567890</span>
-            <span>✉️ info@myinstitute.com</span>
+            <span>✉️ guruglobaleducation@gmail.com</span>
           </div>
 
           {/* RIGHT */}
@@ -79,10 +79,9 @@ function Navbar() {
           <Link to="/" className="flex items-center gap-2">
             <img
               src={logo}
-              alt="MyInstitute Logo"
+              alt="GURU GLOBAL EDUCATION Logo"
               className="h-10 w-auto object-contain"
             />
-            {/* <span className="text-xl font-bold tracking-wide">MyInstitute</span> */}
             <span className="text-xl font-bold tracking-wide">GURU GLOBAL EDUCATION</span>
           </Link>
 

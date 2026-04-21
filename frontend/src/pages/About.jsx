@@ -20,7 +20,7 @@ function About() {
             <div className="w-20 h-1 bg-blue-600"></div>
 
             <p className="text-gray-700 text-lg leading-relaxed">
-              MyInstitute is a premier educational institution dedicated to
+              GURU GLOBAL EDUCATION is a premier educational institution dedicated to
               excellence in teaching, learning, and innovation. We aim to create
               a dynamic academic environment where students can grow both
               intellectually and personally.

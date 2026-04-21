@@ -39,7 +39,7 @@ function Welcome() {
 
           {/* TEXT */}
           <p className="text-gray-700 text-lg leading-relaxed">
-            Welcome to MyInstitute, where excellence meets innovation. We are
+            Welcome to GURU GLOBAL EDUCATION, where excellence meets innovation. We are
             committed to providing a modern educational environment that empowers
             students, enhances learning experiences, and ensures academic success.
           </p>

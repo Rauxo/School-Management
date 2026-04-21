@@ -48,7 +48,7 @@ const AdminLayout = ({ children }) => {
               M
             </div>
             {isSidebarOpen && (
-              <span className="ml-3 font-bold text-lg">MyInstitute</span>
+              <span className="ml-3 font-bold text-lg">GURU GLOBAL EDUCATION</span>
             )}
           </div>
 
