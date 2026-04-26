@@ -5,6 +5,7 @@ import { Card, CardContent } from '@/components/ui/Card';
 import { Award, Download, Calendar, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
+import { getFileUrl } from '@/utils/fileUrl';
 
 const Certificates = () => {
     const { data: certificates, isLoading } = useGetStudentCertificatesQuery();
@@ -40,7 +41,7 @@ const Certificates = () => {
                                     </div>
                                 </div>
                                 <div className="p-4 bg-slate-50 border-t border-slate-100 flex justify-end">
-                                    <Button variant="ghost" size="sm" className="gap-2 text-amber-600 font-bold hover:bg-white" as="a" href={c.fileUrl} target="_blank">
+                                    <Button variant="ghost" size="sm" className="gap-2 text-amber-600 font-bold hover:bg-white" as="a" href={getFileUrl(c.fileUrl)} target="_blank" rel="noopener noreferrer">
                                         <Download size={14} /> Download PDF
                                     </Button>
                                 </div>

@@ -4,16 +4,18 @@ import DataTable from '@/components/common/DataTable';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { Plus, Trash2, FileText, Download } from 'lucide-react';
-import { useGetAdminMaterialsQuery, useUploadMaterialMutation } from '@/api/services/materialsApi';
+import { useGetAdminMaterialsQuery, useUploadMaterialMutation, useDeleteMaterialMutation } from '@/api/services/materialsApi';
 import { useGetBatchesQuery } from '@/api/services/batchesApi';
 import Modal from '@/components/common/Modal';
 import { Input } from '@/components/ui/Input';
 import toast from 'react-hot-toast';
+import { getFileUrl } from '@/utils/fileUrl';
 
 const Materials = () => {
     const { data: materials, isLoading } = useGetAdminMaterialsQuery();
     const { data: batches } = useGetBatchesQuery();
     const [uploadMaterial, { isLoading: isSaving }] = useUploadMaterialMutation();
+    const [deleteMaterial] = useDeleteMaterialMutation();
     const [isModalOpen, setModalOpen] = useState(false);
     
     const [formData, setFormData] = useState({ 
@@ -51,12 +53,10 @@ const Materials = () => {
             header: 'Actions',
             cell: (row) => (
                 <div className="flex gap-2">
-                    <Button variant="ghost" size="sm" className="size-8 p-0 text-slate-400" asChild>
-                        <a href={`${import.meta.env.VITE_API_BASE_URL.replace('/api', '')}${row.fileUrl}`} target="_blank" rel="noopener noreferrer">
-                            <Download size={14} />
-                        </a>
+                    <Button variant="ghost" size="sm" className="size-8 p-0 text-slate-400" as="a" href={getFileUrl(row.fileUrl)} target="_blank" rel="noopener noreferrer">
+                        <Download size={14} />
                     </Button>
-                    <Button variant="ghost" size="sm" className="size-8 p-0 text-red-400 hover:text-red-600">
+                    <Button variant="ghost" size="sm" className="size-8 p-0 text-red-400 hover:text-red-600" onClick={() => handleDelete(row._id)}>
                         <Trash2 size={14} />
                     </Button>
                 </div>
@@ -84,6 +84,17 @@ const Materials = () => {
             setModalOpen(false);
             setFormData({ title: '', description: '', type: 'Study', batchId: '', file: null });
         } catch (err) { toast.error('Upload failed'); }
+    };
+
+    const handleDelete = async (id) => {
+        if (window.confirm('Are you sure you want to delete this material?')) {
+            try {
+                await deleteMaterial(id).unwrap();
+                toast.success('Material deleted successfully');
+            } catch (err) {
+                toast.error('Failed to delete material');
+            }
+        }
     };
 
     return (

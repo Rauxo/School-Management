@@ -32,6 +32,14 @@ export const materialsApi = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ['Material'],
     }),
+    // ✅ Delete material
+    deleteMaterial: builder.mutation({
+      query: (id) => ({
+        url: `/admin/materials/${id}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['Material'],
+    }),
   }),
 });
 
@@ -40,4 +48,5 @@ export const {
   useUploadMaterialMutation,
   useGetStaffMaterialsQuery,
   useUploadStaffMaterialMutation,
+  useDeleteMaterialMutation,
 } = materialsApi;

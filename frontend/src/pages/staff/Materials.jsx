@@ -9,6 +9,7 @@ import { useGetMyBatchesQuery } from '@/api/services/dashboardApi';
 import Modal from '@/components/common/Modal';
 import { Input } from '@/components/ui/Input';
 import toast from 'react-hot-toast';
+import { getFileUrl } from '@/utils/fileUrl';
 
 const Materials = () => {
     const { data: materials, isLoading } = useGetStaffMaterialsQuery();
@@ -51,10 +52,8 @@ const Materials = () => {
             header: 'Actions',
             cell: (row) => (
                 <div className="flex gap-2">
-                    <Button variant="ghost" size="sm" className="size-8 p-0 text-slate-400" asChild>
-                        <a href={`${import.meta.env.VITE_API_BASE_URL.replace('/api', '')}${row.fileUrl}`} target="_blank" rel="noopener noreferrer">
-                            <Download size={14} />
-                        </a>
+                    <Button variant="ghost" size="sm" className="size-8 p-0 text-slate-400" as="a" href={getFileUrl(row.fileUrl)} target="_blank" rel="noopener noreferrer">
+                        <Download size={14} />
                     </Button>
                 </div>
             )

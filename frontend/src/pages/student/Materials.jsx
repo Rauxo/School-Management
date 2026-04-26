@@ -5,6 +5,7 @@ import { Card, CardContent } from '@/components/ui/Card';
 import { FileText, Download, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
+import { getFileUrl } from '@/utils/fileUrl';
 
 const Materials = () => {
     const { data: materials, isLoading } = useGetStudentMaterialsQuery();
@@ -61,7 +62,7 @@ const Materials = () => {
                                     </div>
                                 </div>
                                 <div className="p-4 bg-slate-50 border-t border-slate-100 flex justify-end">
-                                    <Button variant="ghost" size="sm" className="gap-2 text-primary font-bold hover:bg-white" as="a" href={m.fileUrl} target="_blank">
+                                    <Button variant="ghost" size="sm" className="gap-2 text-primary font-bold hover:bg-white" as="a" href={getFileUrl(m.fileUrl)} target="_blank" rel="noopener noreferrer">
                                         <Download size={14} /> Download
                                     </Button>
                                 </div>

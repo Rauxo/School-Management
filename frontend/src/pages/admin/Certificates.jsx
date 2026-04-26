@@ -9,6 +9,7 @@ import { useGetStudentsQuery } from '@/api/services/studentsApi';
 import Modal from '@/components/common/Modal';
 import { Input } from '@/components/ui/Input';
 import toast from 'react-hot-toast';
+import { getFileUrl } from '@/utils/fileUrl';
 
 const Certificates = () => {
     const { data: certificates, isLoading } = useGetAdminCertificatesQuery();
@@ -38,7 +39,7 @@ const Certificates = () => {
         { 
             header: 'Actions', 
             cell: (row) => (
-                <Button variant="ghost" size="sm" className="gap-2 text-primary h-8" as="a" href={row.fileUrl} target="_blank">
+                <Button variant="ghost" size="sm" className="gap-2 text-primary h-8" as="a" href={getFileUrl(row.fileUrl)} target="_blank" rel="noopener noreferrer">
                     <Download size={14} /> View/Download
                 </Button>
             )

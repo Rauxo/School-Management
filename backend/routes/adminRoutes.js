@@ -3,7 +3,7 @@ const {
     addStaff, getStaff, updateStaff, deleteStaff,
     addBatch, getBatches, updateBatch, deleteBatch,
     getDashboardStats,
-    addNotice, getAdminNotices, uploadMaterial, getAdminMaterials, getIncomeReport,
+    addNotice, getAdminNotices, uploadMaterial, getAdminMaterials, deleteMaterial, getIncomeReport,
     getExams, createExam,
     getStaffAttendanceAdmin, approvePayment, downloadIncomeReport ,getAllResults,
     issueCertificate, getAdminCertificates, getPublicBatches
@@ -66,6 +66,8 @@ router.route('/results').get(getAllResults);
 router.route('/materials')
     .post(upload.single('file'), uploadMaterial)
     .get(getAdminMaterials);
+router.route('/materials/:id')
+    .delete(deleteMaterial);
 
 router.route('/certificates')
     .post(upload.single('file'), issueCertificate)

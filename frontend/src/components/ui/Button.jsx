@@ -1,7 +1,7 @@
 import * as React from "react"
 import { cn } from "@/utils/cn"
 
-const Button = React.forwardRef(({ className, variant = "primary", size = "md", ...props }, ref) => {
+const Button = React.forwardRef(({ className, variant = "primary", size = "md", as: Component = "button", ...props }, ref) => {
   const variants = {
     primary: "bg-primary text-white hover:bg-primary/90 shadow-sm",
     secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80",
@@ -16,7 +16,7 @@ const Button = React.forwardRef(({ className, variant = "primary", size = "md", 
   }
 
   return (
-    <button
+    <Component
       className={cn(
         "inline-flex items-center justify-center rounded-md font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:opacity-50 disabled:pointer-events-none active:scale-95",
         variants[variant],

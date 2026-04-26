@@ -107,9 +107,7 @@ const Fees = () => {
                             ✓ Approve
                         </Button>
                     )}
-                    <Button variant="ghost" size="sm" className="size-8 p-0 text-slate-400" title="Download Invoice">
-                        <Download size={14} />
-                    </Button>
+                   
                 </div>
             )
         }

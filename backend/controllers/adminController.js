@@ -465,6 +465,20 @@ const getAdminMaterials = async (req, res) => {
     .populate("batch", "name");
   res.json(materials);
 };
+
+// @desc    Delete material
+// @route   DELETE /api/admin/materials/:id
+// @access  Private/Admin
+const deleteMaterial = async (req, res) => {
+  const material = await Material.findById(req.params.id);
+
+  if (material) {
+    await material.deleteOne();
+    res.json({ message: "Material removed" });
+  } else {
+    res.status(404).json({ message: "Material not found" });
+  }
+};
 // @desc    Delete batch
 // @route   DELETE /api/admin/batches/:id
 // @access  Private/Admin
@@ -751,6 +765,7 @@ module.exports = {
   getAdminNotices,
   uploadMaterial,
   getAdminMaterials,
+  deleteMaterial,
   getIncomeReport,
   getExams,
   createExam,
