@@ -17,7 +17,7 @@ function OurStaff() {
         <div className="max-w-7xl mx-auto">
           {/* HEADING */}
           <div className="mb-12">
-            <h1 className="text-4xl font-bold text-gray-800 mb-2">👩‍🏫 Our Dedicated Staff</h1>
+            <h1 className="text-4xl font-bold text-gray-800 mb-2"> Our Dedicated Staff</h1>
             <p className="text-slate-500">Meet the experts behind our students' success.</p>
           </div>
 

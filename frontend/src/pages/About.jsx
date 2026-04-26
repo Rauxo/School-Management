@@ -1,5 +1,6 @@
 import React from "react";
 import PageLayout from "../layouts/PageLayout";
+import img from "../components/1.jpeg"
 
 function About() {
   return (
@@ -38,18 +39,13 @@ function About() {
               to continuous improvement, we strive to shape future leaders and
               responsible citizens.
             </p>
-
-            <button className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition shadow-md">
-              Learn More
-            </button>
-
           </div>
 
           {/* RIGHT - IMAGE */}
           <div className="w-full h-[400px] md:h-[500px] overflow-hidden shadow-xl">
 
             <img
-              src="https://images.unsplash.com/photo-1523240795612-9a054b0db644"
+              src={img}
               alt="Institute"
               className="w-full h-full object-cover hover:scale-105 transition duration-500"
             />
