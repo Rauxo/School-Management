@@ -22,10 +22,10 @@ export const staffApi = apiSlice.injectEndpoints({
       invalidatesTags: ['Staff', 'Dashboard'],
     }),
     updateStaff: builder.mutation({
-      query: ({ id, ...data }) => ({
+      query: ({ id, ...body }) => ({
         url: `/admin/staff/${id}`,
         method: 'PUT',
-        data,
+        data: body.data || body,
       }),
       invalidatesTags: ['Staff', 'Dashboard'],
     }),

@@ -143,6 +143,18 @@ const addStaff = async (req, res) => {
   });
 
   if (user) {
+    let assignedBatches = [];
+    if (req.body.assignedBatches) {
+      try {
+        assignedBatches = typeof req.body.assignedBatches === 'string' 
+          ? JSON.parse(req.body.assignedBatches) 
+          : req.body.assignedBatches;
+        if (!Array.isArray(assignedBatches)) assignedBatches = [assignedBatches];
+      } catch (e) {
+        assignedBatches = [req.body.assignedBatches];
+      }
+    }
+
     const staff = await Staff.create({
       user: user._id,
       employeeId,
@@ -151,6 +163,9 @@ const addStaff = async (req, res) => {
       phone,
       address,
       image,
+      assignedBatches: Array.isArray(assignedBatches) 
+        ? assignedBatches.filter(id => id && String(id).trim() !== "") 
+        : [],
     });
 
     res.status(201).json(staff);
@@ -188,19 +203,22 @@ const updateStaff = async (req, res) => {
     }
 
     if (req.body.assignedBatches !== undefined) {
-      try {
-        let assignedBatches = JSON.parse(req.body.assignedBatches);
-        // Ensure it's an array and filter out empty strings
-        if (Array.isArray(assignedBatches)) {
-          staff.assignedBatches = assignedBatches.filter(
-            (id) => id && id.trim() !== "",
-          );
-        } else {
-          staff.assignedBatches = [];
+      let batches = req.body.assignedBatches;
+      if (typeof batches === 'string') {
+        try {
+          const parsed = JSON.parse(batches);
+          batches = Array.isArray(parsed) ? parsed : [batches];
+        } catch (e) {
+          batches = batches.trim() !== "" ? [batches] : [];
         }
-      } catch (err) {
-        // If parsing fails, treat as empty
+      }
+      
+      if (Array.isArray(batches)) {
+        staff.assignedBatches = batches.filter(id => id && String(id).trim() !== "");
+        staff.markModified('assignedBatches');
+      } else {
         staff.assignedBatches = [];
+        staff.markModified('assignedBatches');
       }
     }
 
